@@ -1,14 +1,27 @@
+using Core.Interfaces;
+using Infrastructure.Data;
+using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+//add later to extension
+builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddScoped<IRoutineService, RoutineService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+
+builder.Services.AddDbContext<PlanityDbContext>(opt =>
+{
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

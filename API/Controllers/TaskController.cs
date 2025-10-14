@@ -1,6 +1,6 @@
 ﻿namespace API.Controllers
 {
-    public class TaskController
+    public class TaskController : BaseApiController
     {
     }
 }

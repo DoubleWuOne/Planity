@@ -1,6 +1,6 @@
 ﻿namespace API.Controllers
 {
-    public class RoutineController
+    public class RoutineController : BaseApiController
     {
     }
 }

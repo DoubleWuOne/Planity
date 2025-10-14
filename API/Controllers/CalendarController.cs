@@ -1,6 +1,6 @@
 ﻿namespace API.Controllers
 {
-    public class CalendarController
+    public class CalendarController : BaseApiController
     {
     }
 }

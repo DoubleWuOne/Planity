@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\" />
-    <Folder Include="Interfaces\" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="6.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\DTO\" />
+  </ItemGroup>
+  
 </Project>

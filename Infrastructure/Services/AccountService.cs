@@ -1,6 +1,8 @@
 ﻿using Core.Entities;
+using Core.Entities.DTO;
 using Core.Interfaces;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services
@@ -8,32 +10,37 @@ namespace Infrastructure.Services
     public class AccountService : IAccountService
     {
         private readonly PlanityDbContext _context;
+        private readonly SignInManager<UserEntity> _signInManager;
 
-        public AccountService(PlanityDbContext context)
+        public AccountService(PlanityDbContext context, SignInManager<UserEntity> signInManager)
         {
             _context = context;
+            _signInManager = signInManager;
         }
 
         public async Task<bool> Login()
         {
-            //check if user exists
-            //check if password is correct
-
             return false;
         }
 
-        public async Task<bool> Register(UserEntity user)
+        public async Task<bool> Register(RegisterDto user)
         {
-            //check if email exists
-            //hash password
-            //save user
-            bool existingUser = await CheckIfUserWithMailExist(user.Email);
-            if (!existingUser)
-                return false;
+            var userEntity = new UserEntity
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                UserName = user.Email
+            };
+            userEntity.CreatedAt = DateTime.Now;
+            await _signInManager.UserManager.CreateAsync(userEntity, user.Password);
 
-            user.CreatedAt = DateTime.Now;
-            await _context.AddAsync(user);
-            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> Logout()
+        {
+            await _signInManager.SignOutAsync();
 
             return true;
         }

@@ -1,3 +1,4 @@
+using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Services;
@@ -14,6 +15,10 @@ builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IRoutineService, RoutineService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<UserEntity>()
+    .AddEntityFrameworkStores<PlanityDbContext>();
 
 builder.Services.AddDbContext<PlanityDbContext>(opt =>
 {
@@ -33,5 +38,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapGroup("api").MapIdentityApi<UserEntity>();
 app.Run();

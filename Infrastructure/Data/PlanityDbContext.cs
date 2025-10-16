@@ -1,16 +1,15 @@
 ﻿using Core.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
-    public class PlanityDbContext : DbContext
+    public class PlanityDbContext(DbContextOptions options) : IdentityDbContext<UserEntity>(options)
     {
-        public PlanityDbContext(DbContextOptions<PlanityDbContext> options) : base(options)
-        {
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<RoutineEntity>()
                 .HasOne(x => x.User)
                 .WithMany(u => u.Routines)
@@ -30,7 +29,6 @@ namespace Infrastructure.Data
                 .OnDelete(DeleteBehavior.Cascade);
         }
 
-        public DbSet<UserEntity> Users { get; set; }
         public DbSet<RoutineEntity> Routines { get; set; }
         public DbSet<CalendarEventEntity> CalendarEvents { get; set; }
         public DbSet<TaskEntity> Tasks { get; set; }

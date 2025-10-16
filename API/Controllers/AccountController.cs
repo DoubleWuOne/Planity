@@ -1,5 +1,6 @@
-﻿using Core.Entities;
+﻿using Core.Entities.DTO;
 using Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -14,12 +15,21 @@ namespace API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserEntity user)
+        public async Task<IActionResult> Register([FromBody] RegisterDto user)
         {
             var status = await _accountService.Register(user);
             return Ok($"{status}");
         }
 
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var status = await _accountService.Logout();
+            return Ok($"{status}");
+        }
+
+        //not working, just for testing purpose
         [HttpGet("login")]
         public async Task<IActionResult> Login()
         {

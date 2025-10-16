@@ -7,7 +7,7 @@
         public string Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public UserEntity User { get; set; }
 
     }

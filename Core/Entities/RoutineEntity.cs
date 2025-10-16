@@ -7,7 +7,7 @@
         public string Description { get; set; }
         public TimeSpan Time { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public UserEntity User { get; set; }
     }
 }

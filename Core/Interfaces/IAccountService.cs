@@ -1,10 +1,11 @@
-﻿using Core.Entities;
+﻿using Core.Entities.DTO;
 
 namespace Core.Interfaces
 {
     public interface IAccountService
     {
         Task<bool> Login();
-        Task<bool> Register(UserEntity user);
+        Task<bool> Register(RegisterDto user);
+        Task<bool> Logout();
     }
 }

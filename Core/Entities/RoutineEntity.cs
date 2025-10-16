@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Core.Entities
+﻿namespace Core.Entities
 {
-    internal class RoutineEntity
+    public class RoutineEntity
     {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public TimeSpan Time { get; set; }
+        public DayOfWeek DayOfWeek { get; set; }
+        public int UserId { get; set; }
+        public UserEntity User { get; set; }
     }
 }

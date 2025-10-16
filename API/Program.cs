@@ -13,6 +13,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IRoutineService, RoutineService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 builder.Services.AddDbContext<PlanityDbContext>(opt =>
 {

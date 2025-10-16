@@ -82,5 +82,10 @@ namespace Infrastructure.Services
                 return null;
             return task;
         }
+
+        private async Task<List<TaskEntity>> GetTodayTasks(string userId)
+        {
+            return await _context.Tasks.Where(x => x.DueDate.Date == DateTime.Today && x.UserId == userId).ToListAsync();
+        }
     }
 }

@@ -27,7 +27,7 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpGet("tasks")]
+        [HttpGet("Tasks")]
         public async Task<List<TaskEntity>> GetTasks()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

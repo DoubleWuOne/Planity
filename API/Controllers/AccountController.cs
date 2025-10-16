@@ -29,12 +29,14 @@ namespace API.Controllers
             return Ok($"{status}");
         }
 
-        //not working, just for testing purpose
-        [HttpGet("login")]
-        public async Task<IActionResult> Login()
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto, [FromQuery] bool useCookies = false)
         {
-            var login = await _accountService.Login();
-            return Ok($"{login}");
+            var login = await _accountService.Login(loginDto, useCookies);
+            if (!login)
+                return Unauthorized();
+
+            return Ok("Zalogowano pomyślnie");
         }
     }
 }

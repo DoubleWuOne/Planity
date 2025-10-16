@@ -11,16 +11,30 @@ namespace Infrastructure.Services
     {
         private readonly PlanityDbContext _context;
         private readonly SignInManager<UserEntity> _signInManager;
+        private UserManager<UserEntity> _userManager;
 
-        public AccountService(PlanityDbContext context, SignInManager<UserEntity> signInManager)
+        public AccountService(PlanityDbContext context, SignInManager<UserEntity> signInManager, UserManager<UserEntity> userManager)
         {
             _context = context;
             _signInManager = signInManager;
+            _userManager = userManager;
         }
 
-        public async Task<bool> Login()
+        public async Task<bool> Login(LoginDto loginDto, bool cookies)
         {
-            return false;
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            if (user == null)
+                return false;
+
+            var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, lockoutOnFailure: false);
+            if (!result.Succeeded)
+                return false;
+
+            if (cookies)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: true);
+            }
+            return true;
         }
 
         public async Task<bool> Register(RegisterDto user)

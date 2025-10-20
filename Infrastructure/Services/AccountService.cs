@@ -39,6 +39,10 @@ namespace Infrastructure.Services
 
         public async Task<bool> Register(RegisterDto user)
         {
+            var mail = await _userManager.FindByEmailAsync(user.Email);
+            if (mail != null)
+                return false;
+
             var userEntity = new UserEntity
             {
                 FirstName = user.FirstName,

@@ -1,3 +1,20 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from './pages/home/home.component';
+import { CalendarComponent } from './pages/calendar/calendar.component';
+import { TasksComponent } from './pages/tasks/tasks.component';
+import { DailyRoutineComponent } from './pages/daily-routine/daily-routine.component';
+import { StatsComponent } from './pages/stats/stats.component';
+import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+	{ path: '', component: HomeComponent },
+	{ path: 'calendar', component: CalendarComponent },
+	{ path: 'tasks', component: TasksComponent },
+	{ path: 'daily-routine', component: DailyRoutineComponent },
+	{ path: 'stats', component: StatsComponent },
+	{ path: 'login', component: LoginComponent },
+	{ path: 'register', component: RegisterComponent },
+	// logout is handled by the navbar action; keep a route to redirect to home
+	{ path: 'logout', component: HomeComponent }
+];

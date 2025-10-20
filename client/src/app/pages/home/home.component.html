@@ -1,0 +1,97 @@
+<div class="landing" *ngIf="!auth.isAuthenticated()">
+  <section class="features">
+    <div class="feature-card">
+      <div class="icon">📅</div>
+      <h3>Calendar</h3>
+      <p>Plan events and see your schedule at a glance.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">✅</div>
+      <h3>Tasks</h3>
+      <p>Create, prioritize and complete your todo tasks.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔁</div>
+      <h3>Daily Routine</h3>
+      <p>Manage repeating habits and routines easily.</p>
+    </div>
+  </section>
+
+
+  <section class="slogan">
+    <h2 class="fade-in">All in one place.</h2>
+    <p class="desc fade-in delay">Plan, track and maintain your day — calendar, tasks and routines combined so you can focus on what matters.</p>
+    <div class="gallery" aria-hidden="false">
+      <div class="slides">
+        <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&q=60&auto=format&fit=crop" alt="calendar sample" class="slide"/>
+        <img src="https://images.unsplash.com/photo-1598791318878-10e76d178023?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2070" alt="tasks sample" class="slide"/>
+        <img src="https://images.unsplash.com/photo-1711030239027-4ee82270f3f8?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074" alt="routine sample" class="slide"/>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials">
+    <div class="testimonials-inner">
+      <div class="testimonial">
+        <img class="avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=60&auto=format&fit=crop" alt="Anna" />
+        <div class="stars">★★★★★</div>
+        <p class="quote">"Planity is incredibly simple and intuitive — I organized my whole week in minutes."</p>
+        <div class="author">— Anna, Product Manager</div>
+      </div>
+      <div class="testimonial">
+        <img class="avatar" src="https://images.unsplash.com/photo-1760733345250-6b2625fca116?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687" alt="Marcin" />
+        <div class="stars">★★★★★</div>
+        <p class="quote">"Clean UI and smooth flow. Tasks and routines finally in one place."</p>
+        <div class="author">— Marcin, Freelancer</div>
+      </div>
+      <div class="testimonial">
+        <img class="avatar" src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?w=200&q=60&auto=format&fit=crop" alt="Kasia" />
+        <div class="stars">★★★★★</div>
+        <p class="quote">"5 stars for usability — I use it every day to keep my habits and meetings on track."</p>
+        <div class="author">— Kasia, Student</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-strips">
+    <div class="strip">
+      <div class="strip-media">
+        <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&q=60&auto=format&fit=crop" alt="Calendar" />
+      </div>
+      <div class="strip-content">
+        <h3>Calendar</h3>
+        <p>Organize events, schedule meetings and visualize your day in one interactive calendar.</p>
+        <a class="btn primary" routerLink="/login">Login to try</a>
+      </div>
+    </div>
+
+    <div class="strip alt">
+      <div class="strip-media">
+        <img src="https://images.unsplash.com/photo-1598791318878-10e76d178023?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2070" alt="Tasks" />
+      </div>
+      <div class="strip-content">
+        <h3>Tasks</h3>
+        <p>Create tasks, set priorities and track progress with simple and clear task lists.</p>
+        <a class="btn primary" routerLink="/login">Login to try</a>
+      </div>
+    </div>
+
+    <div class="strip">
+      <div class="strip-media">
+        <img src="https://images.unsplash.com/photo-1711030239027-4ee82270f3f8?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074" alt="Daily Routine" />
+      </div>
+      <div class="strip-content">
+        <h3>Daily Routine</h3>
+        <p>Set up recurring routines and keep your daily habits on track with ease.</p>
+        <a class="btn primary" routerLink="/login">Login to try</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="auth-coming-soon" *ngIf="auth.isAuthenticated()">
+  <div class="coming-card">
+    <h2>Content coming soon</h2>
+    <p>We're preparing your personalized dashboard. Check back shortly.</p>
+  </div>
+</div>

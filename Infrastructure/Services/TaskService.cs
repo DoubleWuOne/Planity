@@ -41,6 +41,18 @@ namespace Infrastructure.Services
             return list;
         }
 
+        public async Task<List<TaskEntity>> GetNotDoneTasks(string userId)
+        {
+            var list = _context.Tasks.Where(x => x.UserId == userId && !x.IsCompleted).ToList();
+            return list;
+        }
+
+        public async Task<List<TaskEntity>> GetDoneTasks(string userId)
+        {
+            var list = _context.Tasks.Where(x => x.UserId == userId && x.IsCompleted).ToList();
+            return list;
+        }
+
         public async Task<bool> RemoveTask(string userId, int taskId)
         {
             var task = await GetTask(taskId, userId);

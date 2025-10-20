@@ -1,0 +1,31 @@
+.page { padding: 1.25rem; }
+.page-title { text-align:center; margin:0 0 1rem; font-size:1.6rem; }
+.tasks-section { margin: 1.8rem 0; padding:1rem; border-radius:12px; background: linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0.01)); }
+.tasks-section + .tasks-section { margin-top: 2.25rem; }
+.tasks-section h3 { margin: 0 0 0.9rem; color: #0f172a; }
+.cards { display:flex; gap:1rem; flex-wrap:wrap; }
+.task-card { background: linear-gradient(180deg,#fff, #fbfdff); border-radius:8px; padding:0.9rem 1rem; box-shadow:0 6px 18px rgba(2,6,23,0.04); min-width:220px; max-width:320px; flex:1 1 220px; }
+.task-title { font-weight:700; margin-bottom:0.4rem; color:#0f172a; }
+.task-desc { color:#475569; font-size:0.95rem; }
+.empty { color:#6b7280; font-style:italic; }
+
+.add-task-root { display:flex; justify-content:center; margin-bottom:1rem; }
+.add-form { width:100%; max-width:920px; background: #fff; padding:1rem; border-radius:10px; box-shadow: 0 6px 18px rgba(2,6,23,0.04); }
+.add-form .row { display:flex; gap:0.75rem; margin-bottom:0.6rem; }
+.add-form .col { flex:1; display:flex; flex-direction:column; }
+.add-form .col.full { flex:1 1 100%; }
+.add-form label { font-size:0.78rem; color:#374151; margin-bottom:0.35rem; }
+.add-form input[type="text"], .add-form input[type="date"], .add-form select, .add-form textarea { padding:0.6rem; border-radius:8px; border:1px solid rgba(2,6,23,0.06); }
+.add-form input[type="color"] { width:48px; height:36px; border:0; padding:0; background:transparent; }
+.add-actions { display:flex; gap:0.5rem; justify-content:flex-end; }
+.btn.primary { background: linear-gradient(90deg,#7c3aed,#06b6d4); color:#fff; border:0; padding:0.55rem 0.9rem; border-radius:8px; }
+.validation { color:#b91c1c; font-size:0.82rem; margin-top:0.35rem; }
+
+
+.task-top { display:flex; align-items:center; gap:0.6rem; }
+.task-top input[type="checkbox"] { width:18px; height:18px; }
+.task-title.done { text-decoration: line-through; color:#9aa4ac; }
+.task-card .edit-area { margin-top:0.6rem; display:flex; flex-direction:column; gap:0.5rem; }
+.task-card .edit-area input, .task-card .edit-area textarea { padding:0.5rem; border-radius:8px; border:1px solid rgba(2,6,23,0.06); }
+.edit-actions { display:flex; gap:0.5rem; }
+.edit-actions .btn { padding:0.45rem 0.7rem; border-radius:8px; }

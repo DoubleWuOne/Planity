@@ -1,0 +1,67 @@
+<div class="page">
+  <h2 class="page-title">Tasks</h2>
+
+  <div class="add-task-root">
+    <button class="btn primary" *ngIf="!showAdd" (click)="showAdd = true">+ Add task</button>
+
+    <div *ngIf="showAdd" class="add-form">
+      <div class="row">
+        <div class="col">
+          <label>Title</label>
+          <input placeholder="Title" [(ngModel)]="newTask.title" />
+          <div class="validation" *ngIf="addTouched && titleInvalid">Title is required</div>
+        </div>
+        <div class="col">
+          <label>Date</label>
+          <input placeholder="Date" type="date" [(ngModel)]="newTask.date" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label>Type</label>
+          <select [(ngModel)]="newTask.type">
+            <option value="">(select)</option>
+            <option value="personal">Personal</option>
+            <option value="work">Work</option>
+            <option value="health">Health</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="col color-col">
+          <label>Card color</label>
+          <input type="color" [(ngModel)]="newTask.color" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col full">
+          <label>Description</label>
+          <textarea placeholder="Description" [(ngModel)]="newTask.description"></textarea>
+        </div>
+      </div>
+
+      <div class="add-actions">
+        <button class="btn primary" [disabled]="titleInvalid" (click)="addTask()">Add task</button>
+        <button class="btn" (click)="cancelAdd()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="tasks-section">
+    <h3>Today's tasks</h3>
+    <div *ngIf="todaysTasks.length === 0" class="empty">No tasks for today — enjoy your free time!</div>
+    <app-task-list [tasks]="todaysTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)"></app-task-list>
+  </section>
+
+  <section class="tasks-section">
+    <h3>All tasks</h3>
+    <app-task-list [tasks]="openTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)"></app-task-list>
+  </section>
+
+  <section class="tasks-section done-section">
+    <h3>Done tasks</h3>
+    <div *ngIf="doneTasks.length === 0" class="empty">No completed tasks yet.</div>
+    <app-task-list [tasks]="doneTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)"></app-task-list>
+  </section>
+</div>

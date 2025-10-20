@@ -37,6 +37,26 @@ namespace API.Controllers
         }
 
         [Authorize]
+        [HttpGet("Tasks/done")]
+        public async Task<List<TaskEntity>> GetDoneTasks()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var task = await _taskService.GetDoneTasks(userId);
+            return task;
+        }
+
+        [Authorize]
+        [HttpGet("Tasks/notdone")]
+        public async Task<List<TaskEntity>> GetNotDoneTasks()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var task = await _taskService.GetNotDoneTasks(userId);
+            return task;
+        }
+
+        [Authorize]
         [HttpPut("EditTask/{id}")]
         public async Task<TaskEntity> EditTask(int id, [FromBody] TaskDto taskDto)
         {

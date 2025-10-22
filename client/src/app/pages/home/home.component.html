@@ -1,4 +1,4 @@
-<div class="landing" *ngIf="!auth.isAuthenticated()">
+<div class="landing" *ngIf="!accountService.currentUser()">
   <section class="features">
     <div class="feature-card">
       <div class="icon">📅</div>
@@ -89,7 +89,7 @@
   </section>
 </div>
 
-<div class="auth-coming-soon" *ngIf="auth.isAuthenticated()">
+<div class="auth-coming-soon" *ngIf="accountService.currentUser()">
   <div class="coming-card">
     <h2>Content coming soon</h2>
     <p>We're preparing your personalized dashboard. Check back shortly.</p>

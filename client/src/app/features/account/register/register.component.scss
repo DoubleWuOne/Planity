@@ -1,0 +1,62 @@
+.register-root {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 48px 16px;
+}
+
+.register-form {
+	width: 100%;
+	max-width: 420px;
+	background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+	box-shadow: 0 8px 24px rgba(16,24,40,0.08);
+	border-radius: 12px;
+	padding: 28px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.register-form h2 {
+	margin: 0 0 4px 0;
+	font-size: 20px;
+	color: #0f172a;
+}
+
+.register-form label {
+	font-size: 13px;
+	color: #334155;
+}
+
+.register-form input {
+	padding: 10px 12px;
+	border-radius: 8px;
+	border: 1px solid #e6eef6;
+	background: #fff;
+	outline: none;
+	font-size: 14px;
+}
+
+.register-form .actions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 6px;
+}
+
+.btn.primary {
+	background: linear-gradient(90deg,#2563eb,#7c3aed);
+	color: white;
+	padding: 10px 16px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+}
+
+.btn.primary:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+	.register-form { padding: 20px; }
+}

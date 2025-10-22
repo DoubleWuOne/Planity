@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from './services/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { AccountService } from './services/account.service';
 
 @Component({
   selector: 'app-root',
@@ -10,14 +11,27 @@ import { AuthService } from './services/auth.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   title = 'client';
+  baseUrl = 'http://localhost:5202/api/';
+  accountService = inject(AccountService);
+  private router = inject(Router);
+  private http = inject(HttpClient);
 
-  constructor(public auth: AuthService) {}
+  constructor() {}
+  ngOnInit(): void {
+  }
+  
 
   onLogout(): void {
-    this.auth.logout();
+   this.accountService.logout().subscribe({
+    next: () => {
+      this.accountService.currentUser.set(null);
+      this.router.navigateByUrl('/');
+    }
+   });
   }
+
   get currentYear(): number { return new Date().getFullYear(); }
   contactSent = false;
 

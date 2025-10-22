@@ -4,8 +4,8 @@ import { CalendarComponent } from './pages/calendar/calendar.component';
 import { TasksComponent } from './pages/tasks/tasks.component';
 import { DailyRoutineComponent } from './pages/daily-routine/daily-routine.component';
 import { StatsComponent } from './pages/stats/stats.component';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
+import { LoginComponent } from './features/account/login/login.component';
+import { RegisterComponent } from './features/account/register/register.component';
 
 export const routes: Routes = [
 	{ path: '', component: HomeComponent },

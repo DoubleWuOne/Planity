@@ -2,6 +2,7 @@
 using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -18,7 +19,7 @@ namespace API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterDto user)
         {
             var status = await _accountService.Register(user);
-            return Ok($"{status}");
+            return Ok(status);
         }
 
         [Authorize]
@@ -26,17 +27,26 @@ namespace API.Controllers
         public async Task<IActionResult> Logout()
         {
             var status = await _accountService.Logout();
-            return Ok($"{status}");
+            return Ok(status);
+        }
+
+        [HttpGet("user")]
+        public async Task<IActionResult> UserInfo()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userDto = await _accountService.GetUserInfo(userId);
+            return Ok(userDto);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto, [FromQuery] bool useCookies = false)
         {
             var login = await _accountService.Login(loginDto, useCookies);
-            if (!login)
+            if (login == null)
                 return Unauthorized();
 
-            return Ok("Zalogowano pomyślnie");
+            return Ok(login);
         }
     }
 }

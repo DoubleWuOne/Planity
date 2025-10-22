@@ -15,7 +15,7 @@ builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IRoutineService, RoutineService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
-
+builder.Services.AddCors();
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<UserEntity>()
     .AddEntityFrameworkStores<PlanityDbContext>();
@@ -32,6 +32,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
 app.UseHttpsRedirection();
 

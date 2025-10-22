@@ -20,28 +20,32 @@ namespace Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<bool> Login(LoginDto loginDto, bool cookies)
+        public async Task<UserDto> Login(LoginDto loginDto, bool cookies)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null)
-                return false;
+                return null;
 
             var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, lockoutOnFailure: false);
             if (!result.Succeeded)
-                return false;
+                return null;
 
             if (cookies)
             {
                 await _signInManager.SignInAsync(user, isPersistent: true);
             }
-            return true;
+            return new UserDto
+            {
+                Email = user.Email,
+                FirstName = user.FirstName
+            };
         }
 
-        public async Task<bool> Register(RegisterDto user)
+        public async Task<UserDto> Register(RegisterDto user)
         {
             var mail = await _userManager.FindByEmailAsync(user.Email);
             if (mail != null)
-                return false;
+                return null;
 
             var userEntity = new UserEntity
             {
@@ -53,7 +57,11 @@ namespace Infrastructure.Services
             userEntity.CreatedAt = DateTime.Now;
             await _signInManager.UserManager.CreateAsync(userEntity, user.Password);
 
-            return true;
+            return new UserDto
+            {
+                Email = user.Email,
+                FirstName = user.FirstName,
+            };
         }
 
         public async Task<bool> Logout()
@@ -61,6 +69,19 @@ namespace Infrastructure.Services
             await _signInManager.SignOutAsync();
 
             return true;
+        }
+
+        public async Task<UserDto> GetUserInfo(string userEmail)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userEmail);
+            if (user == null)
+                return null;
+
+            return new UserDto
+            {
+                Email = user.Email,
+                FirstName = user.FirstName,
+            };
         }
 
         private async Task<bool> CheckIfUserWithMailExist(string userEmail)

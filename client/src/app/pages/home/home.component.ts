@@ -1,7 +1,7 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, inject } from '@angular/core';
 import { NgIf, CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-home',
@@ -11,7 +11,8 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements AfterViewInit {
-  constructor(public auth: AuthService) {}
+  constructor() {}
+  accountService = inject(AccountService);
 
   ngAfterViewInit(): void {
     if (typeof IntersectionObserver === 'undefined') return;

@@ -23,7 +23,7 @@ namespace API.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             await _taskService.CreateTask(taskDto, userId);
-            return Ok("Task created successfully");
+            return Ok();
         }
 
         [Authorize]
@@ -68,7 +68,7 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPut("StatusTask/{id}")]
-        public async Task<bool> EditTask([FromBody] bool status, int id)
+        public async Task<bool> EditTask(int id, [FromBody] StatusDto status)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

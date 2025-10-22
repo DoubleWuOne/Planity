@@ -25,8 +25,10 @@ namespace Infrastructure.Services
             {
                 Description = taskDto.Description,
                 Title = taskDto.Title,
-                DueDate = DateTime.Today,
+                DueDate = taskDto.DueDate,
                 IsCompleted = false,
+                Color = taskDto.Color,
+                Type = taskDto.Type,
                 User = user,
                 UserId = user.Id,
             };
@@ -63,12 +65,12 @@ namespace Infrastructure.Services
             return true;
         }
 
-        public async Task<bool> ChangeTaskStatus(string? userId, int taskId, bool status)
+        public async Task<bool> ChangeTaskStatus(string? userId, int taskId, StatusDto status)
         {
             var task = await GetTask(taskId, userId);
             if (task == null)
                 return false;
-            task.IsCompleted = status;
+            task.IsCompleted = status.IsCompleted;
             await _context.SaveChangesAsync();
             return true;
         }
@@ -82,6 +84,10 @@ namespace Infrastructure.Services
                 task.Description = taskDto.Description;
             if (!taskDto.Title.IsNullOrEmpty())
                 task.Title = taskDto.Title;
+            if (!taskDto.Color.IsNullOrEmpty())
+                task.Color = taskDto.Color;
+            if (!taskDto.Type.IsNullOrEmpty())
+                task.Type = taskDto.Type;
             await _context.SaveChangesAsync();
             return task;
         }

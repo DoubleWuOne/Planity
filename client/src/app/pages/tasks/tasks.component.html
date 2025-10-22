@@ -13,7 +13,7 @@
         </div>
         <div class="col">
           <label>Date</label>
-          <input placeholder="Date" type="date" [(ngModel)]="newTask.date" />
+          <input placeholder="Date" type="date" [(ngModel)]="newTask.dueDate" />
         </div>
       </div>
 
@@ -55,7 +55,7 @@
   </section>
 
   <section class="tasks-section">
-    <h3>All tasks</h3>
+    <h3>All other tasks</h3>
     <app-task-list [tasks]="openTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)"></app-task-list>
   </section>
 

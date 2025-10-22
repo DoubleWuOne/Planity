@@ -11,7 +11,7 @@ namespace Core.Interfaces
         Task<List<TaskEntity>> GetDoneTasks(string userId);
         Task<List<TaskEntity>> GetNotDoneTasks(string userId);
         Task<bool> RemoveTask(string userId, int taskId);
-        Task<bool> ChangeTaskStatus(string userId, int taskId, bool status);
+        Task<bool> ChangeTaskStatus(string userId, int taskId, StatusDto status);
         Task<TaskEntity> EditTask(string userId, int taskId, TaskDto taskDto);
     }
 }

@@ -18,8 +18,8 @@ import { Task } from '../../models/task.model';
       </div>
 
       <div class="task-top">
-        <input type="checkbox" [checked]="task.completed" (change)="onCheckboxChange($event)" />
-        <span class="task-title" [class.done]="task.completed" (click)="startEdit($event)">{{ task.title }}</span>
+        <input type="checkbox" [checked]="task.isCompleted" (change)="onCheckboxChange($event)" />
+        <span class="task-title" [class.done]="task.isCompleted" (click)="startEdit($event)">{{ task.title }}</span>
       </div>
 
       <div *ngIf="editing" class="edit-area">
@@ -82,12 +82,12 @@ export class TaskCardComponent {
   }
 
   get formattedDate() {
-    if (!this.task?.date) return '';
+    if (!this.task?.dueDate) return '';
     try {
-      const d = new Date(this.task.date);
+      const d = new Date(this.task.dueDate);
       return d.toLocaleDateString();
     } catch (e) {
-      return this.task.date;
+      return this.task.dueDate;
     }
   }
 
@@ -101,7 +101,7 @@ export class TaskCardComponent {
 
   onCheckboxChange(e: Event) {
     const checked = !!(e.target as HTMLInputElement).checked;
-    this.task.completed = checked;
+    this.task.isCompleted = checked;
     // emit so parent can react (move between sections)
     this.toggle.emit(this.task);
   }

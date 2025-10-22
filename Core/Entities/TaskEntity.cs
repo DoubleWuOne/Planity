@@ -7,7 +7,8 @@
         public string Description { get; set; }
         public DateTime DueDate { get; set; }
         public bool IsCompleted { get; set; }
-
+        public string? Color { get; set; }
+        public string? Type { get; set; }
         public string UserId { get; set; }
         public UserEntity User { get; set; }
     }

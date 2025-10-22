@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task } from '../../models/task.model';
 
 @Component({
   selector: 'app-task-card',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, NgIf, FormsModule],
   template: `
     <div class="task-card" [style.border-top-color]="task.color || '#e5e7eb'">
       <div class="accent"> 
@@ -25,10 +25,19 @@ import { Task } from '../../models/task.model';
       <div *ngIf="editing" class="edit-area">
         <input [(ngModel)]="buffer.title" />
         <textarea [(ngModel)]="buffer.description"></textarea>
+        <label>Type</label>
+        <select [(ngModel)]="buffer.type">
+          <option value="">(select)</option>
+          <option value="personal">Personal</option>
+          <option value="work">Work</option>
+          <option value="health">Health</option>
+          <option value="other">Other</option>
+        </select>
         <label class="color-row">Card color: <input type="color" [(ngModel)]="bufferColor" /></label>
         <div class="edit-actions">
           <button class="btn" (click)="save()">Save</button>
           <button class="btn" (click)="cancel()">Cancel</button>
+          <button class="btn" (click)="remove.emit(task)">Delete</button>
         </div>
       </div>
 
@@ -64,14 +73,15 @@ export class TaskCardComponent {
   @Input() task!: Task;
   @Output() updated = new EventEmitter<Task>();
   @Output() toggle = new EventEmitter<Task>();
+  @Output() remove = new EventEmitter<Task>();
 
   editing = false;
-  buffer: { title: string; description: string } = { title: '', description: '' };
+  buffer: { title: string; description: string; type?: string } = { title: '', description: '', type: '' };
   bufferColor: string = '#e5e7eb';
 
   edit() {
     this.editing = true;
-    this.buffer = { title: this.task.title, description: this.task.description };
+    this.buffer = { title: this.task.title, description: this.task.description, type: this.task.type };
     this.bufferColor = this.task.color || '#e5e7eb';
   }
 
@@ -94,6 +104,7 @@ export class TaskCardComponent {
   save() {
     this.task.title = this.buffer.title;
     this.task.description = this.buffer.description;
+    this.task.type = this.buffer.type || this.task.type;
     this.task.color = this.bufferColor;
     this.editing = false;
     this.updated.emit(this.task);

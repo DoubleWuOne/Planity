@@ -132,4 +132,19 @@ export class TasksComponent implements OnInit {
     this.showAdd = false;
     this.newTask = { title: '', description: '', dueDate: new Date().toISOString().slice(0, 10), color: '#e5e7eb', type: '' };
   }
+
+  onTaskRemoved(t: Task) {
+    const idx = this.tasks.findIndex(x => x.id === t.id);
+    if (idx === -1) return;
+    this.taskService.removeTask(t.id!).subscribe({
+      next: ok => {
+        if (ok) {
+          this.tasks.splice(idx, 1);
+        } else {
+          console.warn('Server reported task not removed');
+        }
+      },
+      error: err => console.error('Failed to remove task', err)
+    });
+  }
 }

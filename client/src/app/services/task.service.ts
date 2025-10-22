@@ -21,8 +21,13 @@ export class TaskService {
     }
 
     editStatusTask(id: number, status: boolean) {
-      // API expects boolean in body and id in URL
-      return this.http.put<boolean>(`${this.baseUrl}task/StatusTask/${id}`, {status});
+      // API expects a StatusDto object (IsCompleted). Send PascalCase to match DTO and include credentials.
+      const body = { IsCompleted: status };
+      return this.http.put<boolean>(`${this.baseUrl}task/StatusTask/${id}`, body);
+    }
+
+    removeTask(id: number) {
+      return this.http.delete<boolean>(`${this.baseUrl}task/RemoveTask/${id}`);
     }
 
 }

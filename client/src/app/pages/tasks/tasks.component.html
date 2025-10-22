@@ -51,17 +51,17 @@
   <section class="tasks-section">
     <h3>Today's tasks</h3>
     <div *ngIf="todaysTasks.length === 0" class="empty">No tasks for today — enjoy your free time!</div>
-    <app-task-list [tasks]="todaysTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)"></app-task-list>
+  <app-task-list [tasks]="todaysTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)" (removed)="onTaskRemoved($event)"></app-task-list>
   </section>
 
   <section class="tasks-section">
     <h3>All other tasks</h3>
-    <app-task-list [tasks]="openTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)"></app-task-list>
+  <app-task-list [tasks]="openTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)" (removed)="onTaskRemoved($event)"></app-task-list>
   </section>
 
   <section class="tasks-section done-section">
     <h3>Done tasks</h3>
     <div *ngIf="doneTasks.length === 0" class="empty">No completed tasks yet.</div>
-    <app-task-list [tasks]="doneTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)"></app-task-list>
+  <app-task-list [tasks]="doneTasks" (updated)="onTaskUpdated($event)" (toggled)="onTaskToggled($event)" (removed)="onTaskRemoved($event)"></app-task-list>
   </section>
 </div>

@@ -9,7 +9,7 @@ import { TaskCardComponent } from '../task-card/task-card.component';
   imports: [CommonModule, TaskCardComponent],
   template: `
     <div class="cards">
-      <app-task-card *ngFor="let t of tasks" [task]="t" (updated)="onUpdated($event)" (toggle)="onToggle($event)"></app-task-card>
+      <app-task-card *ngFor="let t of tasks" [task]="t" (updated)="onUpdated($event)" (toggle)="onToggle($event)" (remove)="onRemove($event)"></app-task-card>
     </div>
   `,
   styles: [
@@ -23,7 +23,9 @@ export class TaskListComponent {
   @Input() tasks: Task[] = [];
   @Output() updated = new EventEmitter<Task>();
   @Output() toggled = new EventEmitter<Task>();
+  @Output() removed = new EventEmitter<Task>();
 
   onUpdated(t: Task) { this.updated.emit(t); }
   onToggle(t: Task) { this.toggled.emit(t); }
+  onRemove(t: Task) { this.removed.emit(t); }
 }

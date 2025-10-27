@@ -27,7 +27,7 @@ export class RoutineService {
   addLocal(r: Partial<Routine>) : Routine {
     const list = this.getAllLocal();
     const id = Math.max(0, ...list.map(x => x.id || 0)) + 1;
-    const item: Routine = { id, title: r.title || 'New routine', time: r.time ?? null, description: r.description ?? null, completions: r.completions ?? [] };
+    const item: Routine = { id, title: r.title || 'New routine', time: r.time ?? null, completions: r.completions ?? [] };
     list.push(item);
     this.saveAllLocal(list);
     return item;

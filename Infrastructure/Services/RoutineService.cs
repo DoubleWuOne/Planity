@@ -38,7 +38,7 @@ namespace Infrastructure.Services
             await _context.Routines.AddAsync(routine);
 
             await _context.SaveChangesAsync();
-            return new OkObjectResult("Task created successfully");
+            return new OkObjectResult("Routine created successfully");
         }
 
         public async Task<List<RoutineDto>> GetUserRoutines(string userId)
@@ -128,14 +128,14 @@ namespace Infrastructure.Services
             return true;
         }
 
-        public async Task<RoutineDto> EditRoutine(string userId, int routineId, RoutineDto routineDto)
+        public async Task<RoutineUpdateDto> EditRoutine(string userId, int routineId, RoutineUpdateDto routineDto)
         {
             var routine = await GetRoutine(routineId, userId);
             if (routine == null)
                 return null;
             if (routineDto.Time != null)
                 routine.Time = routineDto.Time;
-            if (routineDto.Title.IsNullOrEmpty())
+            if (!routineDto.Title.IsNullOrEmpty())
                 routine.Title = routineDto.Title;
             await _context.SaveChangesAsync();
             return routineDto;

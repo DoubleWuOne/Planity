@@ -35,7 +35,7 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPut("EditRoutine/{id}")]
-        public async Task<IActionResult> EditRoutine(int id, [FromBody] RoutineDto dto)
+        public async Task<IActionResult> EditRoutine(int id, [FromBody] RoutineUpdateDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

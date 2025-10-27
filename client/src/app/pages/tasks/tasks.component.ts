@@ -30,7 +30,7 @@ export class TasksComponent implements OnInit {
     const idx = this.tasks.findIndex(x => x.id === t.id);
     if (idx === -1) return;
     // send edit to backend
-    const payload = { title: t.title, description: t.description, dueDate: t.dueDate, color: t.color, type: t.type };
+    const payload = { title: t.title, dueDate: t.dueDate, color: t.color, type: t.type };
     this.taskService.editTask(t.id!, payload).subscribe({
       next: (updated: Task) => {
         this.tasks[idx] = updated;

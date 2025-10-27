@@ -103,7 +103,6 @@ export class TaskCardComponent {
 
   save() {
     this.task.title = this.buffer.title;
-    this.task.description = this.buffer.description;
     this.task.type = this.buffer.type || this.task.type;
     this.task.color = this.bufferColor;
     this.editing = false;

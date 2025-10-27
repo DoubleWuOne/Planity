@@ -2,10 +2,18 @@
   <h2 class="page-title">Daily Routines</h2>
 
   <div class="add-root">
-    <input placeholder="Routine title" [(ngModel)]="newTitle" [attr.maxlength]="TITLE_MAX" />
-  <small class="char-count">{{ newTitle.length }} / {{ TITLE_MAX }}</small>
-    <input type="time" [(ngModel)]="newTime" />
-    <button class="btn primary" (click)="addRoutine()">Add</button>
+    <div class="add-card">
+      <div class="add-main">
+        <input class="title-input" placeholder="Add routine title" [(ngModel)]="newTitle" [attr.maxlength]="TITLE_MAX" (keyup.enter)="addRoutine()" />
+        <div class="meta-row">
+          <input class="time-input" type="time" [(ngModel)]="newTime" />
+          <small class="char-count">{{ newTitle.length }} / {{ TITLE_MAX }}</small>
+        </div>
+      </div>
+      <div class="add-actions">
+        <button class="btn primary add-btn" (click)="addRoutine()">Add routine</button>
+      </div>
+    </div>
   </div>
   <!-- Today section -->
   <section class="routine-section">

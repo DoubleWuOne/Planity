@@ -53,13 +53,16 @@
       <h3>Yesterday routines</h3>
       <div class="section-date">{{ yesterdayDateDisplay }}</div>
     </div>
+    <div *ngIf="yesterdayRoutines.length === 0" class="empty-note">No routines recorded yesterday.</div>
     <div class="routine-strip" aria-label="Yesterday's routines">
-      <div *ngIf="yesterdayRoutines.length === 0" class="empty-note">No routines recorded yesterday.</div>
       <div *ngFor="let y of yesterdayRoutines" class="routine-item">
-        <div class="routine-card readonly">
+        <div class="routine-card readonly small">
+          <div class="card-badge" [class.done]="y.wasCompleted">{{ y.wasCompleted ? 'Done' : 'Not' }}</div>
           <div class="r-title">{{ y.r.title }}</div>
           <div class="r-time" *ngIf="y.r.time">{{ y.r.time }}</div>
-          <div class="y-status">{{ y.wasCompleted ? 'Done' : 'Not done' }}</div>
+        </div>
+        <div class="routine-status">
+          <div class="status-square" [class.done]="y.wasCompleted"></div>
         </div>
       </div>
     </div>
@@ -71,13 +74,25 @@
       <h3>Last routines</h3>
       <div class="section-date">History</div>
     </div>
-    <div class="history-list">
-      <div *ngIf="lastRoutines.length === 0" class="empty-note">No historical entries yet.</div>
-      <div *ngFor="let h of lastRoutines" class="history-item">
-        <div class="history-date">{{ h.date }}</div>
-        <div class="history-title">{{ h.title }}</div>
-        <div class="history-status">{{ h.isCompleted ? 'Done' : 'Not done' }}</div>
+    <div *ngIf="lastRoutinesGrouped.length === 0" class="empty-note">No historical entries yet.</div>
+    <div *ngFor="let g of displayedLastGroups" class="history-group">
+      <div class="history-group-header">{{ g.display }}</div>
+      <div class="routine-strip" aria-label="History {{ g.display }}">
+        <div *ngFor="let it of g.items" class="routine-item">
+          <div class="routine-card readonly small">
+            <div class="card-badge" [class.done]="it.isCompleted">{{ it.isCompleted ? 'Done' : 'Not' }}</div>
+            <div class="r-title">{{ it.title }}</div>
+            <div class="r-time" *ngIf="it.time">{{ it.time }}</div>
+          </div>
+          <div class="routine-status">
+            <div class="status-square" [class.done]="it.isCompleted"></div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <div *ngIf="lastRoutinesGrouped.length > HISTORY_DAY_LIMIT" class="history-actions">
+      <button class="btn" (click)="toggleShowMoreHistory()">{{ showAllHistory ? 'Show less' : 'Show more' }}</button>
     </div>
   </section>
 </div>

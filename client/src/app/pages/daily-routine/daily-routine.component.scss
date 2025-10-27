@@ -116,6 +116,28 @@
 }
 .status-square.done { background:#10b981; transform:scale(1.02); }
 
+/* history group header */
+.history-group { margin-bottom:1rem; }
+.history-group-header { font-weight:800; color:#0f172a; margin:0 0 0.5rem 6px; }
+.routine-card.readonly.small { min-height:84px; padding:0.6rem; width: calc(var(--routine-width) - 0px); opacity:0.98; }
+
+/* small badge on card */
+.card-badge {
+  position:absolute;
+  right:10px;
+  top:8px;
+  padding:0.15rem 0.45rem;
+  border-radius:999px;
+  font-size:0.72rem;
+  color:white;
+  background: rgba(99,102,241,0.9); /* default purple */
+}
+.card-badge.done { background: #10b981; }
+.card-badge:not(.done) { background: #ef4444; }
+
+.history-actions { display:flex; justify-content:center; margin-top:0.5rem; }
+.history-actions .btn { padding:0.45rem 0.8rem; border-radius:8px; }
+
 .edit-area input { padding:0.45rem; border-radius:8px; border:1px solid rgba(2,6,23,0.06); margin-bottom:0.4rem; }
 .edit-actions { display:flex; gap:0.4rem; flex-wrap:wrap; }
 .edit-actions .btn { min-width:72px; }

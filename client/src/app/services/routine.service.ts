@@ -48,15 +48,15 @@ export class RoutineService {
     if (idx === -1) return undefined;
     const today = new Date().toISOString().slice(0,10);
     const completions = list[idx].completions ?? [];
-    const existing = completions.find(c => c.Date === today);
+    const existing = completions.find(c => c.date === today);
     if (existing) {
       existing.isCompleted = !existing.isCompleted;
     } else {
-      completions.push({ id: (completions.length? Math.max(...completions.map(c=>c.id))+1 : 1), isCompleted: true, Date: today });
+      completions.push({ id: (completions.length? Math.max(...completions.map(c=>c.id))+1 : 1), isCompleted: true, date: today });
     }
     list[idx].completions = completions;
     this.saveAllLocal(list);
-    return completions.find(c=>c.Date===today)?.isCompleted;
+    return completions.find(c=>c.date===today)?.isCompleted;
   }
 
   deleteLocal(id: number): boolean {
@@ -69,10 +69,19 @@ export class RoutineService {
   }
 
   isCompletedToday(r: Routine): boolean {
-    const today = new Date().toISOString().slice(0,10);
-    return !!(r.completions && r.completions.find(c => c.Date === today && c.isCompleted));
+    return !!(r.completions && r.completions.find(c => this.isToday(c.date) && c.isCompleted));
   }
+  
+  private isToday(dateString: string): boolean {
+    const d = new Date(dateString);
+    const today = new Date();
 
+    return (
+      d.getFullYear() === today.getFullYear() &&
+      d.getMonth() === today.getMonth() &&
+      d.getDate() === today.getDate()
+    );
+  }
   // HTTP wrappers (if backend exists)
   getRoutines(){
     return this.http.get<Routine[]>(this.baseUrl + 'routine/routines');

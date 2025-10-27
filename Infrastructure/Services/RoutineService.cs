@@ -23,11 +23,18 @@ namespace Infrastructure.Services
             var routine = new RoutineEntity
             {
                 Title = routineDto.Title,
-                Description = routineDto.Description,
                 Time = routineDto.Time,
                 User = user,
-                UserId = user.Id
+                UserId = user.Id,
+                Completions = new List<RoutineCompletionEntity>()
             };
+            var completion = new RoutineCompletionEntity
+            {
+                RoutineId = routine.Id,
+                Date = DateTime.Today,
+                IsCompleted = false
+            };
+            routine.Completions.Add(completion);
             await _context.Routines.AddAsync(routine);
 
             await _context.SaveChangesAsync();
@@ -36,13 +43,40 @@ namespace Infrastructure.Services
 
         public async Task<List<RoutineDto>> GetUserRoutines(string userId)
         {
-            var routines = await _context.Routines.Where(x => x.UserId == userId).Include(y => y.Completions).ToListAsync();
+            var routines = await _context.Routines
+                .Where(x => x.UserId == userId)
+                .Include(y => y.Completions)
+                .ToListAsync();
 
-            var results = routines.Select(r => new RoutineDto
+            var today = DateTime.Today;
+
+            foreach (var routine in routines)
+            {
+                var lastCompletion = routine.Completions
+                    .OrderByDescending(c => c.Date)
+                    .FirstOrDefault();
+
+                var lastDate = lastCompletion.Date.Date;
+
+                for (var date = lastDate.AddDays(1); date <= today; date = date.AddDays(1))
+                {
+                    if (!routine.Completions.Any(c => c.Date.Date == date))
+                    {
+                        routine.Completions.Add(new RoutineCompletionEntity
+                        {
+                            RoutineId = routine.Id,
+                            Date = date,
+                            IsCompleted = false
+                        });
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            var result = routines.Select(r => new RoutineDto
             {
                 Id = r.Id,
                 Title = r.Title,
-                Description = r.Description,
                 Time = r.Time,
                 Completions = r.Completions.Select(c => new RoutineCompletionDto
                 {
@@ -51,7 +85,8 @@ namespace Infrastructure.Services
                     IsCompleted = c.IsCompleted
                 }).ToList()
             }).ToList();
-            return results;
+
+            return result;
         }
 
         public Task<List<RoutineCompletionEntity>> GetUserCompletionRoutines(string userId)
@@ -102,8 +137,6 @@ namespace Infrastructure.Services
                 routine.Time = routineDto.Time;
             if (routineDto.Title.IsNullOrEmpty())
                 routine.Title = routineDto.Title;
-            if (routineDto.Description.IsNullOrEmpty())
-                routine.Description = routineDto.Description;
             await _context.SaveChangesAsync();
             return routineDto;
         }

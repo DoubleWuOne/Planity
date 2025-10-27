@@ -19,7 +19,6 @@ namespace Infrastructure.Services
 
         public async Task<IActionResult> CreateTask(TaskDto taskDto, string userId)
         {
-
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             var task = new TaskEntity
             {

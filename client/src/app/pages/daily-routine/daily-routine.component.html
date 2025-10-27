@@ -1,3 +1,75 @@
 <div class="page">
-  <h2>Daily Routine (placeholder)</h2>
+  <h2 class="page-title">Daily Routines</h2>
+
+  <div class="add-root">
+    <input placeholder="Routine title" [(ngModel)]="newTitle" [attr.maxlength]="TITLE_MAX" />
+  <small class="char-count">{{ newTitle.length }} / {{ TITLE_MAX }}</small>
+    <input type="time" [(ngModel)]="newTime" />
+    <button class="btn primary" (click)="addRoutine()">Add</button>
+  </div>
+  <!-- Today section -->
+  <section class="routine-section">
+    <div class="section-header">
+      <h3>Today routines</h3>
+      <div class="section-date">{{ todayDateDisplay }}</div>
+    </div>
+    <div class="routine-strip" aria-label="Today's routines">
+      <div *ngFor="let r of todayRoutines" class="routine-item">
+        <div class="routine-card" (click)="startEdit(r)">
+          <div *ngIf="editingId !== r.id">
+            <div class="r-title">{{ r.title }}</div>
+            <div class="r-time" *ngIf="r.time">{{ r.time }}</div>
+          </div>
+          <div *ngIf="editingId === r.id" class="edit-area">
+            <input [(ngModel)]="editTitle" [attr.maxlength]="TITLE_MAX" />
+            <small class="char-count">{{ editTitle.length }} / {{ TITLE_MAX }}</small>
+            <input type="time" [(ngModel)]="editTime" />
+            <div class="edit-actions">
+              <button class="btn primary" (click)="$event.stopPropagation(); saveEdit(r)">Save</button>
+              <button class="btn" (click)="$event.stopPropagation(); cancelEdit()">Cancel</button>
+              <button class="btn danger" (click)="$event.stopPropagation(); deleteRoutine(r)">Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="routine-status" (click)="toggleCompletion(r)">
+          <div class="status-square" [class.done]="isCompletedToday(r)"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Yesterday section -->
+  <section class="routine-section">
+    <div class="section-header">
+      <h3>Yesterday routines</h3>
+      <div class="section-date">{{ yesterdayDateDisplay }}</div>
+    </div>
+    <div class="routine-strip" aria-label="Yesterday's routines">
+      <div *ngIf="yesterdayRoutines.length === 0" class="empty-note">No routines recorded yesterday.</div>
+      <div *ngFor="let y of yesterdayRoutines" class="routine-item">
+        <div class="routine-card readonly">
+          <div class="r-title">{{ y.r.title }}</div>
+          <div class="r-time" *ngIf="y.r.time">{{ y.r.time }}</div>
+          <div class="y-status">{{ y.wasCompleted ? 'Done' : 'Not done' }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Last routines (history) -->
+  <section class="routine-section history">
+    <div class="section-header">
+      <h3>Last routines</h3>
+      <div class="section-date">History</div>
+    </div>
+    <div class="history-list">
+      <div *ngIf="lastRoutines.length === 0" class="empty-note">No historical entries yet.</div>
+      <div *ngFor="let h of lastRoutines" class="history-item">
+        <div class="history-date">{{ h.date }}</div>
+        <div class="history-title">{{ h.title }}</div>
+        <div class="history-status">{{ h.isCompleted ? 'Done' : 'Not done' }}</div>
+      </div>
+    </div>
+  </section>
 </div>

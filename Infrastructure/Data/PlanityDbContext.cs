@@ -16,6 +16,12 @@ namespace Infrastructure.Data
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<RoutineCompletionEntity>()
+                .HasOne(x => x.RoutineEntity)
+                .WithMany(r => r.Completions)
+                .HasForeignKey(n => n.RoutineId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<TaskEntity>()
                 .HasOne(x => x.User)
                 .WithMany(u => u.Tasks)
@@ -30,6 +36,7 @@ namespace Infrastructure.Data
         }
 
         public DbSet<RoutineEntity> Routines { get; set; }
+        public DbSet<RoutineCompletionEntity> RoutineCompletions { get; set; }
         public DbSet<CalendarEventEntity> CalendarEvents { get; set; }
         public DbSet<TaskEntity> Tasks { get; set; }
     }

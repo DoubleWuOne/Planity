@@ -91,7 +91,25 @@
 
 <div class="auth-coming-soon" *ngIf="accountService.currentUser()">
   <div class="coming-card">
-    <h2>Content coming soon</h2>
-    <p>We're preparing your personalized dashboard. Check back shortly.</p>
+    <h2>Today</h2>
+    <p class="muted">A quick look at up to 3 tasks due today.</p>
+
+    <div class="today-tasks">
+      <div *ngIf="loadingTasks" class="loading">Loading tasks…</div>
+      <div *ngIf="!loadingTasks && todaysTasks.length === 0" class="empty">No tasks for today — create one in Tasks.</div>
+      <ul *ngIf="!loadingTasks && todaysTasks.length > 0" class="task-preview">
+        <li *ngFor="let t of todaysTasks" class="task-item">
+          <div class="left">
+            <div class="dot" [style.background]="t.color || '#eef2ff'">✓</div>
+          </div>
+          <div class="content">
+            <div class="title">{{ t.title }}</div>
+            <div class="desc">{{ t.description }}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div style="margin-top:1rem; text-align:right;"><a class="btn primary" routerLink="/tasks">Open Tasks</a></div>
   </div>
 </div>

@@ -89,8 +89,11 @@
 }
 
 /* authenticated minimal placeholder */
-.auth-coming-soon { display:flex; align-items:flex-start; justify-content:flex-end; padding:3rem 1rem; }
-.coming-card { background: linear-gradient(180deg,#0f172a, #061826); color: #e6f7fb; padding:2.25rem; border-radius:16px; box-shadow:0 18px 50px rgba(2,6,23,0.18); text-align:left; width:420px; transform:translateY(-10px); }
+.auth-coming-soon { display:flex; align-items:flex-start; justify-content:flex-start; padding:3rem 1rem; }
+.coming-card { background: linear-gradient(180deg,#0f172a, #061826); color: #e6f7fb; padding:2.25rem; border-radius:16px; box-shadow:0 18px 50px rgba(2,6,23,0.18); text-align:left; transform:translateY(-10px); }
+.coming-cards { width:100%; max-width:1100px; margin:0; }
+.coming-card.routines { flex:1 1 65%; min-width:380px; }
+.coming-card.tasks { flex:0 0 360px; }
 .coming-card h2 { margin:0 0 0.5rem; font-size:1.85rem; color:#dffafe; }
 .coming-card p { margin:0 0 0.5rem; color:#bfecef; }
 

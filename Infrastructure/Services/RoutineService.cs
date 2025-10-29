@@ -26,6 +26,7 @@ namespace Infrastructure.Services
                 Time = routineDto.Time,
                 User = user,
                 UserId = user.Id,
+                Deleted = false,
                 Completions = new List<RoutineCompletionEntity>()
             };
             var completion = new RoutineCompletionEntity
@@ -60,7 +61,7 @@ namespace Infrastructure.Services
 
                 for (var date = lastDate.AddDays(1); date <= today; date = date.AddDays(1))
                 {
-                    if (!routine.Completions.Any(c => c.Date.Date == date))
+                    if (!routine.Completions.Any(c => c.Date.Date == date) && !routine.Deleted)
                     {
                         routine.Completions.Add(new RoutineCompletionEntity
                         {
@@ -78,6 +79,7 @@ namespace Infrastructure.Services
                 Id = r.Id,
                 Title = r.Title,
                 Time = r.Time,
+                Deleted = r.Deleted,
                 Completions = r.Completions.Select(c => new RoutineCompletionDto
                 {
                     Id = c.Id,
@@ -89,17 +91,18 @@ namespace Infrastructure.Services
             return result;
         }
 
-        public Task<List<RoutineCompletionEntity>> GetUserCompletionRoutines(string userId)
-        {
-            throw new NotImplementedException(); //chyba niepotrzebne?
-        }
-
         public async Task<bool> DeleteRoutine(string userId, int routineId)
         {
             var routine = await GetRoutine(routineId, userId);
             if (routine == null)
                 return false;
-            _context.Routines.Remove(routine);
+
+            routine.Deleted = true;
+            var routineCompletionToday =
+                await _context.RoutineCompletions.FirstOrDefaultAsync(x => x.Date == DateTime.Today);
+            if (routineCompletionToday != null)
+                _context.RoutineCompletions.Remove(routineCompletionToday);
+            //_context.Routines.Remove(routine);
             await _context.SaveChangesAsync();
             return true;
         }

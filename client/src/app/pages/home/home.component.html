@@ -90,26 +90,51 @@
 </div>
 
 <div class="auth-coming-soon" *ngIf="accountService.currentUser()">
-  <div class="coming-card">
-    <h2>Today</h2>
-    <p class="muted">A quick look at up to 3 tasks due today.</p>
+  <div class="coming-cards" style="display:flex; gap:1rem; align-items:flex-start;">
+    <div class="coming-card routines">
+      <h2>Today's routines</h2>
+      <p class="muted">All routines scheduled for today.</p>
 
-    <div class="today-tasks">
-      <div *ngIf="loadingTasks" class="loading">Loading tasks…</div>
-      <div *ngIf="!loadingTasks && todaysTasks.length === 0" class="empty">No tasks for today — create one in Tasks.</div>
-      <ul *ngIf="!loadingTasks && todaysTasks.length > 0" class="task-preview">
-        <li *ngFor="let t of todaysTasks" class="task-item">
-          <div class="left">
-            <div class="dot" [style.background]="t.color || '#eef2ff'">✓</div>
-          </div>
-          <div class="content">
-            <div class="title">{{ t.title }}</div>
-            <div class="desc">{{ t.description }}</div>
-          </div>
-        </li>
-      </ul>
+      <div class="routines-preview">
+        <div *ngIf="loadingRoutines" class="loading">Loading routines…</div>
+        <div *ngIf="!loadingRoutines && todaysRoutines.length === 0" class="empty">No routines for today.</div>
+        <ul *ngIf="!loadingRoutines && todaysRoutines.length > 0" class="task-preview">
+          <li *ngFor="let r of todaysRoutines" class="task-item">
+            <div class="left">
+              <div class="dot" [style.background]="(routineService.isCompletedToday(r) ? '#10b981' : '#fecaca')">{{ routineService.isCompletedToday(r) ? '✓' : ' ' }}</div>
+            </div>
+            <div class="content">
+              <div class="title">{{ r.title }}</div>
+              <div class="desc">{{ r.time || 'No time' }}</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div style="margin-top:1rem; text-align:right;"><a class="btn primary" routerLink="/daily-routine">Open Routines</a></div>
     </div>
 
-    <div style="margin-top:1rem; text-align:right;"><a class="btn primary" routerLink="/tasks">Open Tasks</a></div>
+    <div class="coming-card tasks">
+      <h2>Today</h2>
+      <p class="muted">A quick look at up to 3 tasks due today.</p>
+
+      <div class="today-tasks">
+        <div *ngIf="loadingTasks" class="loading">Loading tasks…</div>
+        <div *ngIf="!loadingTasks && todaysTasks.length === 0" class="empty">No tasks for today — create one in Tasks.</div>
+        <ul *ngIf="!loadingTasks && todaysTasks.length > 0" class="task-preview">
+          <li *ngFor="let t of todaysTasks" class="task-item">
+            <div class="left">
+              <div class="dot" [style.background]="t.color || '#eef2ff'">✓</div>
+            </div>
+            <div class="content">
+              <div class="title">{{ t.title }}</div>
+              <div class="desc">{{ t.description }}</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div style="margin-top:1rem; text-align:right;"><a class="btn primary" routerLink="/tasks">Open Tasks</a></div>
+    </div>
   </div>
 </div>

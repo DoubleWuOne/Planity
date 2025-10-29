@@ -11,6 +11,19 @@
         </div>
       </div>
       <div class="add-actions">
+        <div class="today-progress" aria-hidden="false" title="Today's routines progress">
+          <svg class="progress-svg" viewBox="0 0 72 72" width="72" height="72">
+            <!-- background (remaining) in red -->
+            <circle cx="36" cy="36" r="30" stroke="#ef4444" stroke-width="8" fill="none" opacity="0.18" />
+            <!-- progress (done) in green - use dasharray/dashoffset -->
+            <circle cx="36" cy="36" r="30" stroke="#10b981" stroke-width="8" fill="none"
+                    stroke-linecap="round"
+                    [attr.stroke-dasharray]="progressCircumference"
+                    [attr.stroke-dashoffset]="progressDashOffset"
+                    transform="rotate(-90 36 36)" />
+          </svg>
+          <div class="progress-center">{{ todayDone }} / {{ todayTotal }}</div>
+        </div>
         <button class="btn primary add-btn" (click)="addRoutine()">Add routine</button>
       </div>
     </div>

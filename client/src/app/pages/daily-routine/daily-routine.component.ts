@@ -37,6 +37,31 @@ export class DailyRoutineComponent implements OnInit {
   editTitle = '';
   editTime: string | null = null;
 
+  // progress donut config
+  readonly progressRadius = 30; // px for SVG circle radius
+
+  get todayTotal(): number {
+    return this.todayRoutines ? this.todayRoutines.length : 0;
+  }
+
+  get todayDone(): number {
+    return this.todayRoutines ? this.todayRoutines.filter(r => this.isCompletedToday(r)).length : 0;
+  }
+
+  get todayProgressPercent(): number {
+    if (!this.todayTotal) return 0;
+    return Math.round((this.todayDone / this.todayTotal) * 100);
+  }
+
+  get progressCircumference(): number {
+    return 2 * Math.PI * this.progressRadius;
+  }
+
+  get progressDashOffset(): number {
+    const pct = this.todayProgressPercent / 100;
+    return this.progressCircumference * (1 - pct);
+  }
+
   ngOnInit(): void {
     this.load();
   }
@@ -59,16 +84,14 @@ export class DailyRoutineComponent implements OnInit {
 
   private buildSections(){
     const today = new Date();
-    const todayStr = today.toISOString().slice(0,10);
     this.todayDateDisplay = this.formatDate(today);
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().slice(0,10);
     this.yesterdayDateDisplay = this.formatDate(yesterday);
 
     // Today's routines: show all routines (sorted)
-    this.todayRoutines = this.sortList(this.routines.slice());
-
+    this.todayRoutines = this.sortList(this.routines.slice()).filter(r => !r.deleted);;
+    console.log(this.todayRoutines);
     // Yesterday: routines that had a completion entry for yesterday
     this.yesterdayRoutines = this.routines
       .map(r => {
@@ -205,7 +228,7 @@ export class DailyRoutineComponent implements OnInit {
   }
 
   deleteRoutine(r: Routine) {
-    const confirmDelete = confirm(`Usuń rutynę "${r.title}"?`);
+    const confirmDelete = confirm(`Delete routine "${r.title}"?`);
     if (!confirmDelete) return;
     this.routineService.deleteRoutine(r.id).subscribe({
       next: (ok) => { if (ok) this.load(); },

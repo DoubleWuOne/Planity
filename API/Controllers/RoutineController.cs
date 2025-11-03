@@ -24,6 +24,9 @@ namespace API.Controllers
                 return Unauthorized();
 
             var routineList = await _routineService.GetUserRoutines(userId);
+            if (!routineList.Any())
+                return NoContent();
+
             return Ok(routineList);
         }
 
@@ -64,7 +67,7 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpPut("completion/{id}")]
+        [HttpPut("Completion/{id}")]
         public async Task<IActionResult> ChangeRoutineCompletion(int id, [FromBody] RoutineCompletionDto dto)
         {
             var userId = GetUserIdByClaimTypes();

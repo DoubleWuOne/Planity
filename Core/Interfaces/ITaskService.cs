@@ -1,17 +1,16 @@
 ﻿using Core.Entities;
 using Core.Entities.DTO;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Core.Interfaces
 {
     public interface ITaskService
     {
-        Task<IActionResult> CreateTask(TaskDto taskDto, string userId);
-        Task<List<TaskEntity>> GetTasks(string userId);
-        Task<List<TaskEntity>> GetDoneTasks(string userId);
-        Task<List<TaskEntity>> GetNotDoneTasks(string userId);
-        Task<bool> RemoveTask(string userId, int taskId);
-        Task<bool> ChangeTaskStatus(string userId, int taskId, StatusDto status);
-        Task<TaskEntity> EditTask(string userId, int taskId, TaskDto taskDto);
+        Task CreateTaskAsync(CreateTaskDto createTaskDto, string userId);
+        Task<List<TaskEntity>> GetTasksAsync(string userId);
+        Task<List<TaskEntity>> GetDoneTasksAsync(string userId);
+        Task<List<TaskEntity>> GetNotDoneTasksAsync(string userId);
+        Task<bool> RemoveTaskAsync(string userId, int taskId);
+        Task<bool> ChangeTaskStatusAsync(string userId, int taskId, StatusDto status);
+        Task<TaskEntity?> EditTaskAsync(string userId, int taskId, EditTaskDto editTaskDto);
     }
 }

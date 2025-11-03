@@ -17,13 +17,14 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPost("CreateTask")]
-        public async Task<IActionResult> CreateTask([FromBody] TaskDto taskDto)
+        public async Task<IActionResult> CreateTask([FromBody] CreateTaskDto createTaskDto)
         {
             var userId = GetUserIdByClaimTypes();
             if (userId == null)
                 return Unauthorized();
-            await _taskService.CreateTask(taskDto, userId);
-            return Ok();
+
+            await _taskService.CreateTaskAsync(createTaskDto, userId);
+            return CreatedAtAction(nameof(GetTasks), null);
         }
 
         [Authorize]
@@ -33,44 +34,47 @@ namespace API.Controllers
             var userId = GetUserIdByClaimTypes();
             if (userId == null)
                 return Unauthorized();
-            var tasks = await _taskService.GetTasks(userId);
+
+            var tasks = await _taskService.GetTasksAsync(userId);
             if (!tasks.Any())
-                return NotFound("No tasks found for the user.");
+                return NoContent();
 
             return Ok(tasks);
         }
 
         [Authorize]
-        [HttpGet("Tasks/done")]
+        [HttpGet("Tasks/Done")]
         public async Task<IActionResult> GetDoneTasks()
         {
             var userId = GetUserIdByClaimTypes();
             if (userId == null)
                 return Unauthorized();
-            var task = await _taskService.GetDoneTasks(userId);
+
+            var task = await _taskService.GetDoneTasksAsync(userId);
             return Ok(task);
         }
 
         [Authorize]
-        [HttpGet("Tasks/notdone")]
+        [HttpGet("Tasks/NotDone")]
         public async Task<IActionResult> GetNotDoneTasks()
         {
             var userId = GetUserIdByClaimTypes();
             if (userId == null)
                 return Unauthorized();
-            var task = await _taskService.GetNotDoneTasks(userId);
+
+            var task = await _taskService.GetNotDoneTasksAsync(userId);
             return Ok(task);
         }
 
         [Authorize]
         [HttpPut("EditTask/{id}")]
-        public async Task<IActionResult> EditTask(int id, [FromBody] TaskDto taskDto)
+        public async Task<IActionResult> EditTask(int id, [FromBody] EditTaskDto editTaskDto)
         {
             var userId = GetUserIdByClaimTypes();
             if (userId == null)
                 return Unauthorized();
-            var task = await _taskService.EditTask(userId, id, taskDto);
-            return Ok(task);
+            var updated = await _taskService.EditTaskAsync(userId, id, editTaskDto);
+            return updated is null ? NotFound() : Ok(updated);
         }
 
         [Authorize]
@@ -81,8 +85,8 @@ namespace API.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            var task = await _taskService.ChangeTaskStatus(userId, id, status);
-            return Ok(task);
+            var success = await _taskService.ChangeTaskStatusAsync(userId, id, status);
+            return success ? Ok() : NotFound();
         }
 
         [Authorize]
@@ -92,8 +96,10 @@ namespace API.Controllers
             var userId = GetUserIdByClaimTypes();
             if (userId == null)
                 return Unauthorized();
-            var task = await _taskService.RemoveTask(userId, id);
-            return Ok(task);
+
+            //todo: handle not found
+            var task = await _taskService.RemoveTaskAsync(userId, id);
+            return task ? Ok(task) : NotFound();
         }
 
         private string? GetUserIdByClaimTypes()

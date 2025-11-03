@@ -1,15 +1,11 @@
-﻿namespace Core.Entities
+﻿namespace Core.Entities.DTO
 {
-    public class TaskEntity
+    public class CreateTaskDto
     {
-        public int Id { get; set; }
         public required string Title { get; set; }
         public string? Description { get; set; }
         public DateTime DueDate { get; set; }
-        public bool IsCompleted { get; set; }
         public string? Color { get; set; }
         public string? Type { get; set; }
-        public required string UserId { get; set; }
-        public required UserEntity User { get; set; }
     }
 }

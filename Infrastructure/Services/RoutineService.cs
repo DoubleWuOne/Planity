@@ -2,9 +2,7 @@
 using Core.Entities.DTO;
 using Core.Interfaces;
 using Infrastructure.Data;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Services
 {
@@ -16,9 +14,12 @@ namespace Infrastructure.Services
             _context = context;
         }
 
-        public async Task<IActionResult> CreateRoutine(RoutineDto routineDto, string userId)
+        public async Task CreateRoutineAsync(RoutineDto routineDto, string userId)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                throw new InvalidOperationException("User not found");
 
             var routine = new RoutineEntity
             {
@@ -36,10 +37,9 @@ namespace Infrastructure.Services
                 IsCompleted = false
             };
             routine.Completions.Add(completion);
-            await _context.Routines.AddAsync(routine);
 
+            await _context.Routines.AddAsync(routine);
             await _context.SaveChangesAsync();
-            return new OkObjectResult("Routine created successfully");
         }
 
         public async Task<List<RoutineDto>> GetUserRoutines(string userId)
@@ -62,7 +62,7 @@ namespace Infrastructure.Services
 
                 for (var date = lastDate.AddDays(1); date <= today; date = date.AddDays(1))
                 {
-                    if (!routine.Completions.Any(c => c.Date.Date == date) && !routine.Deleted)
+                    if (routine.Completions.All(c => c.Date.Date != date) && !routine.Deleted)
                     {
                         routine.Completions.Add(new RoutineCompletionEntity
                         {
@@ -99,6 +99,7 @@ namespace Infrastructure.Services
                 return false;
 
             routine.Deleted = true;
+
             // Remove only the completion that belongs to the routine being deleted for today.
             var routineCompletionToday = await _context.RoutineCompletions
                 .FirstOrDefaultAsync(x => x.RoutineId == routine.Id && x.Date.Date == DateTime.Today);
@@ -106,7 +107,7 @@ namespace Infrastructure.Services
             {
                 _context.RoutineCompletions.Remove(routineCompletionToday);
             }
-            //_context.Routines.Remove(routine);
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -135,26 +136,25 @@ namespace Infrastructure.Services
             return true;
         }
 
-        public async Task<RoutineUpdateDto> EditRoutine(string userId, int routineId, RoutineUpdateDto routineDto)
+        public async Task<RoutineUpdateDto?> EditRoutine(string userId, int routineId, RoutineUpdateDto routineDto)
         {
             var routine = await GetRoutine(routineId, userId);
             if (routine == null)
                 return null;
             if (routineDto.Time != null)
                 routine.Time = routineDto.Time;
-            if (!routineDto.Title.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(routineDto.Title))
                 routine.Title = routineDto.Title;
+
             await _context.SaveChangesAsync();
             return routineDto;
         }
 
-        private async Task<RoutineEntity> GetRoutine(int id, string userId)
+        private async Task<RoutineEntity?> GetRoutine(int id, string userId)
         {
             var routine = await _context.Routines.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 
-            if (routine == null)
-                return null;
-            return routine;
+            return routine ?? null;
         }
     }
 }

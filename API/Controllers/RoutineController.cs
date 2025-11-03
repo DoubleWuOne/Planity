@@ -16,6 +16,18 @@ namespace API.Controllers
         }
 
         [Authorize]
+        [HttpPost("CreateRoutine")]
+        public async Task<IActionResult> CreateRoutine([FromBody] RoutineDto routineDto)
+        {
+            var userId = GetUserIdByClaimTypes();
+            if (userId == null)
+                return Unauthorized();
+
+            await _routineService.CreateRoutineAsync(routineDto, userId);
+            return CreatedAtAction(nameof(GetRoutines), null);
+        }
+
+        [Authorize]
         [HttpGet("Routines")]
         public async Task<IActionResult> GetRoutines()
         {
@@ -31,18 +43,6 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpPost("CreateRoutine")]
-        public async Task<IActionResult> CreateRoutine([FromBody] RoutineDto routineDto)
-        {
-            var userId = GetUserIdByClaimTypes();
-            if (userId == null)
-                return Unauthorized();
-
-            await _routineService.CreateRoutine(routineDto, userId);
-            return Ok();
-        }
-
-        [Authorize]
         [HttpPut("EditRoutine/{id}")]
         public async Task<IActionResult> EditRoutine(int id, [FromBody] RoutineUpdateDto dto)
         {
@@ -50,8 +50,8 @@ namespace API.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            var routine = await _routineService.EditRoutine(userId, id, dto);
-            return Ok(routine);
+            var edited = await _routineService.EditRoutine(userId, id, dto);
+            return edited is null ? NotFound() : Ok(edited);
         }
 
         [Authorize]
@@ -62,8 +62,8 @@ namespace API.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            var routine = await _routineService.DeleteRoutine(userId, id);
-            return Ok(routine);
+            var success = await _routineService.DeleteRoutine(userId, id);
+            return success ? Ok(success) : NotFound();
         }
 
         [Authorize]
@@ -74,8 +74,8 @@ namespace API.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            var status = await _routineService.ChangeRoutineCompletion(userId, id, dto);
-            return Ok(status);
+            var success = await _routineService.ChangeRoutineCompletion(userId, id, dto);
+            return success ? Ok(success) : NotFound();
         }
 
         private string? GetUserIdByClaimTypes()

@@ -97,9 +97,8 @@ namespace API.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            //todo: handle not found
-            var task = await _taskService.RemoveTaskAsync(userId, id);
-            return task ? Ok(task) : NotFound();
+            var success = await _taskService.RemoveTaskAsync(userId, id);
+            return success ? Ok(success) : NotFound();
         }
 
         private string? GetUserIdByClaimTypes()

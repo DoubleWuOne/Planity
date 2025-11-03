@@ -19,7 +19,10 @@ namespace API.Controllers
         [HttpGet("Routines")]
         public async Task<IActionResult> GetRoutines()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserIdByClaimTypes();
+            if (userId == null)
+                return Unauthorized();
+
             var routineList = await _routineService.GetUserRoutines(userId);
             return Ok(routineList);
         }
@@ -28,7 +31,10 @@ namespace API.Controllers
         [HttpPost("CreateRoutine")]
         public async Task<IActionResult> CreateRoutine([FromBody] RoutineDto routineDto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserIdByClaimTypes();
+            if (userId == null)
+                return Unauthorized();
+
             await _routineService.CreateRoutine(routineDto, userId);
             return Ok();
         }
@@ -37,7 +43,9 @@ namespace API.Controllers
         [HttpPut("EditRoutine/{id}")]
         public async Task<IActionResult> EditRoutine(int id, [FromBody] RoutineUpdateDto dto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserIdByClaimTypes();
+            if (userId == null)
+                return Unauthorized();
 
             var routine = await _routineService.EditRoutine(userId, id, dto);
             return Ok(routine);
@@ -47,7 +55,9 @@ namespace API.Controllers
         [HttpDelete("DeleteRoutine/{id}")]
         public async Task<IActionResult> DeleteRoutine(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserIdByClaimTypes();
+            if (userId == null)
+                return Unauthorized();
 
             var routine = await _routineService.DeleteRoutine(userId, id);
             return Ok(routine);
@@ -55,12 +65,20 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPut("completion/{id}")]
-        public async Task<bool> ChangeRoutineCompletion(int id, [FromBody] RoutineCompletionDto dto)
+        public async Task<IActionResult> ChangeRoutineCompletion(int id, [FromBody] RoutineCompletionDto dto)
+        {
+            var userId = GetUserIdByClaimTypes();
+            if (userId == null)
+                return Unauthorized();
+
+            var status = await _routineService.ChangeRoutineCompletion(userId, id, dto);
+            return Ok(status);
+        }
+
+        private string? GetUserIdByClaimTypes()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var routine = await _routineService.ChangeRoutineCompletion(userId, id, dto);
-            return routine;
+            return userId;
         }
     }
 }

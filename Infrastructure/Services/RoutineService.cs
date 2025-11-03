@@ -56,7 +56,8 @@ namespace Infrastructure.Services
                 var lastCompletion = routine.Completions
                     .OrderByDescending(c => c.Date)
                     .FirstOrDefault();
-
+                if (lastCompletion == null)
+                    continue;
                 var lastDate = lastCompletion.Date.Date;
 
                 for (var date = lastDate.AddDays(1); date <= today; date = date.AddDays(1))
@@ -98,10 +99,13 @@ namespace Infrastructure.Services
                 return false;
 
             routine.Deleted = true;
-            var routineCompletionToday =
-                await _context.RoutineCompletions.FirstOrDefaultAsync(x => x.Date == DateTime.Today);
+            // Remove only the completion that belongs to the routine being deleted for today.
+            var routineCompletionToday = await _context.RoutineCompletions
+                .FirstOrDefaultAsync(x => x.RoutineId == routine.Id && x.Date.Date == DateTime.Today);
             if (routineCompletionToday != null)
+            {
                 _context.RoutineCompletions.Remove(routineCompletionToday);
+            }
             //_context.Routines.Remove(routine);
             await _context.SaveChangesAsync();
             return true;

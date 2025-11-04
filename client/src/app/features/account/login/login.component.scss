@@ -8,3 +8,8 @@
 .login-form .validation { color:#b91c1c; font-size:0.86rem; }
 .login-form .actions { display:flex; justify-content:flex-end; margin-top:0.5rem; }
 .btn.primary { background: linear-gradient(90deg,#06b6d4,#7c3aed); color:#fff; border:0; padding:10px 14px; border-radius:10px; font-weight:600; box-shadow:0 14px 40px rgba(12,24,48,0.08); }
+
+/* toast */
+.toast { display:flex; align-items:center; gap:0.6rem; background: linear-gradient(90deg,#fff7ed,#fff); border:1px solid rgba(0,0,0,0.06); padding:0.5rem 0.75rem; border-radius:8px; margin-top:0.6rem; position:relative; }
+.toast-text { font-size:0.95rem; color:var(--text-primary); }
+.toast-close { position:absolute; right:8px; top:6px; background:transparent; border:none; font-size:16px; cursor:pointer; color:var(--muted); }

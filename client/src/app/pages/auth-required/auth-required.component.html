@@ -1,0 +1,11 @@
+<div class="auth-required-root">
+  <div class="card">
+    <h2>Login required</h2>
+    <p>You must be logged in to access this page.</p>
+    <p *ngIf="returnUrl">After login you'll be redirected back to <strong>{{ returnUrl }}</strong></p>
+    <div class="actions">
+      <button class="btn primary" (click)="goLogin()">Go to Login</button>
+      <a routerLink="/" class="btn">Back to Home</a>
+    </div>
+  </div>
+</div>

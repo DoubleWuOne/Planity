@@ -1,0 +1,7 @@
+.auth-required-root{ padding:2rem; display:flex; justify-content:center; }
+.card{ width:420px; padding:1.1rem; border-radius:10px; background:var(--card-bg); box-shadow:0 8px 28px rgba(0,0,0,0.06); text-align:center }
+.card h2{ margin:0 0 0.5rem }
+.card p{ color:var(--muted) }
+.actions{ margin-top:1rem; display:flex; gap:0.6rem; justify-content:center }
+.btn{ padding:0.5rem 0.8rem; border-radius:6px; border:1px solid rgba(0,0,0,0.06); cursor:pointer; background:transparent }
+.btn.primary{ background:var(--accent); color:white; border: none }

@@ -1,0 +1,96 @@
+<div class="account-page">
+  <h1>Account Settings</h1>
+  <div class="columns">
+    <section class="panel profile">
+      <div class="panel-header">
+        <h2>Profile</h2>
+        <p class="subtitle">Edit your personal information and avatar</p>
+      </div>
+
+      <div class="avatar-row">
+        <div class="avatar">
+          <img *ngIf="avatarPreview; else placeholder" [src]="avatarPreview" alt="avatar" />
+          <ng-template #placeholder>
+            <div class="avatar-placeholder">No avatar</div>
+          </ng-template>
+        </div>
+        <div class="avatar-actions">
+          <label class="btn">
+            Change avatar
+            <input type="file" accept="image/*" (change)="onAvatarChange($event)" hidden />
+          </label>
+        </div>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+        <div class="form-row">
+          <label>First name</label>
+          <input formControlName="firstName" />
+        </div>
+        <div class="form-row">
+          <label>Last name</label>
+          <input formControlName="lastName" />
+        </div>
+        <div class="form-row">
+          <label>Email</label>
+          <input formControlName="email" [disabled]="true" />
+        </div>
+
+        <div class="change-password">
+          <h3>Change password</h3>
+          <div class="form-row">
+            <label>Current password</label>
+            <input type="password" formControlName="currentPassword" />
+          </div>
+          <div class="form-row">
+            <label>New password</label>
+            <input type="password" formControlName="newPassword" />
+          </div>
+          <div class="form-row">
+            <label>Confirm new password</label>
+            <input type="password" formControlName="confirmNewPassword" />
+          </div>
+          <div class="pw-warning" *ngIf="profileForm.get('newPassword')?.value && profileForm.get('newPassword')?.value !== profileForm.get('confirmNewPassword')?.value">
+            New passwords do not match.
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="save" type="submit">Save profile</button>
+          <span class="saved" *ngIf="profileSaved">Saved!</span>
+        </div>
+      </form>
+    </section>
+
+    <aside class="panel general">
+      <div class="panel-header">
+        <h2>General</h2>
+        <p class="subtitle">Application preferences</p>
+      </div>
+
+      <form [formGroup]="generalForm" (ngSubmit)="saveGeneral()">
+        <div class="form-row">
+          <label>Theme</label>
+          <div class="theme-toggle">
+            <label><input type="radio" formControlName="theme" value="light" /> Light</label>
+            <label><input type="radio" formControlName="theme" value="dark" /> Dark</label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Connected accounts</label>
+          <div class="connected">
+            <p>Google: <em>not connected</em></p>
+            <p>GitHub: <em>not connected</em></p>
+            <button class="link">Manage</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="save" type="submit">Save settings</button>
+          <span class="saved" *ngIf="generalSaved">Saved!</span>
+        </div>
+      </form>
+    </aside>
+  </div>
+</div>

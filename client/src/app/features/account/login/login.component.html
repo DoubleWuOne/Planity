@@ -7,8 +7,12 @@
             </div>
         </div>
 
-        <label>Email address</label>
-        <input formControlName="email" type="email" placeholder="task@test.com" />
+    <label>Email address</label>
+                <input formControlName="email" type="email" placeholder="task@test.com" />
+                <div class="toast" *ngIf="toastVisible">
+                    <span class="toast-text">{{ infoMessage }}</span>
+                    <button class="toast-close" (click)="closeToast()" aria-label="close">×</button>
+                </div>
         <div class="validation"
             *ngIf="loginForm.controls.email.invalid && (loginForm.controls.email.dirty || loginForm.controls.email.touched)">
             Please enter a valid email address

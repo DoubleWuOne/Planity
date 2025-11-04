@@ -17,7 +17,8 @@
 						<a routerLink="/register" routerLinkActive="active">Register</a>
 					</ng-container>
 	      		<ng-container *ngIf="accountService.currentUser()">
-	        <a (click)="onLogout()" routerLink="/logout">Logout</a>
+		        <a routerLink="/account" routerLinkActive="active">Account</a>
+		        <a (click)="onLogout()" routerLink="/logout">Logout</a>
 
 	      		</ng-container>
 		</div>

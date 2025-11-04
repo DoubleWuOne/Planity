@@ -6,6 +6,7 @@ import { DailyRoutineComponent } from './pages/daily-routine/daily-routine.compo
 import { StatsComponent } from './pages/stats/stats.component';
 import { LoginComponent } from './features/account/login/login.component';
 import { RegisterComponent } from './features/account/register/register.component';
+import { AccountComponent } from './features/account/account.component';
 
 export const routes: Routes = [
 	{ path: '', component: HomeComponent },
@@ -15,6 +16,7 @@ export const routes: Routes = [
 	{ path: 'stats', component: StatsComponent },
 	{ path: 'login', component: LoginComponent },
 	{ path: 'register', component: RegisterComponent },
+	{ path: 'account', component: AccountComponent },
 	// logout is handled by the navbar action; keep a route to redirect to home
 	{ path: 'logout', component: HomeComponent }
 ];

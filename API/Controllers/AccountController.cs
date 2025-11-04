@@ -19,8 +19,16 @@ namespace API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterDto user)
         {
             var status = await _accountService.Register(user);
-            if (status == null)
-                return BadRequest("User with this email already exists.");
+            if (!status.Succeeded)
+            {
+                foreach (var identityError in status.Errors)
+                {
+                    ModelState.AddModelError(identityError.Code, identityError.Description);
+                }
+
+                return ValidationProblem();
+            }
+
             return Ok(status);
         }
 

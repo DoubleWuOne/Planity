@@ -1,21 +1,57 @@
 <div class="register-root">
 	<form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
-		<h2>Create account</h2>
+		<div class="header">
+			<div class="titles">
+				<h2>Create account</h2>
+				<div class="subtitle">Create your Planity account to manage routines & tasks</div>
+			</div>
+		</div>
+
+		<!-- global messages -->
+		<div *ngIf="successMessage" class="alert success">{{ successMessage }}</div>
+		<div *ngIf="errorMessage" class="alert error">{{ errorMessage }}</div>
 
 		<label>First Name</label>
-		<input formControlName="firstName" type="text" placeholder="First name" />
+		<input formControlName="firstName" type="text" placeholder="First name" aria-invalid="{{ f['firstName'].invalid && f['firstName'].touched }}" />
+		<div class="field-error" *ngIf="f['firstName'].touched && f['firstName'].invalid">First name is required.</div>
 
 		<label>Last Name</label>
 		<input formControlName="lastName" type="text" placeholder="Last name" />
+		<div class="field-error" *ngIf="f['lastName'].touched && f['lastName'].invalid">Last name is required.</div>
 
 		<label>Email</label>
 		<input formControlName="email" type="email" placeholder="you@example.com" />
+		<div class="field-error" *ngIf="f['email'].touched && f['email'].errors">
+			<span *ngIf="f['email'].errors['required']">Email is required.</span>
+			<span *ngIf="f['email'].errors['email']">Please enter a valid email address.</span>
+			<span *ngIf="f['email'].errors['server']">{{ f['email'].errors['server'] }}</span>
+		</div>
 
 		<label>Password</label>
 		<input formControlName="password" type="password" placeholder="Choose a password" />
+		<div class="field-error" *ngIf="f['password'].touched && f['password'].errors">
+			<span *ngIf="f['password'].errors['required']">Password is required.</span>
+			<span *ngIf="f['password'].errors['minlength']">Password must be at least 8 characters.</span>
+			<span *ngIf="f['password'].errors['strong']">Password must include uppercase, lowercase, number and special character.</span>
+			<span *ngIf="f['password'].errors['server']">{{ f['password'].errors['server'] }}</span>
+		</div>
+
+		<ul class="pw-strength">
+			<li [class.ok]="pwHasMin">Min 8</li>
+			<li [class.ok]="pwHasUpper">Upper</li>
+			<li [class.ok]="pwHasLower">Lower</li>
+			<li [class.ok]="pwHasNumber">Number</li>
+			<li [class.ok]="pwHasSpecial">Special</li>
+		</ul>
+
+		<label>Confirm Password</label>
+		<input formControlName="confirmPassword" type="password" placeholder="Repeat password" />
+		<div class="field-error" *ngIf="(f['confirmPassword'].touched || f['password'].touched) && registerForm.hasError('mismatch')">
+			Passwords do not match.
+		</div>
 
 		<div class="actions">
-			<button type="submit" class="btn primary">Register</button>
+			<button type="submit" class="btn primary" [disabled]="submitting || registerForm.invalid">{{ submitting ? 'Registering...' : 'Register' }}</button>
 		</div>
 	</form>
 </div>

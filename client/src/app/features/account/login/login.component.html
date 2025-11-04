@@ -1,18 +1,26 @@
 <div class="login-root">
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        <h2>Sign in</h2>
+        <div class="header">
+            <div class="titles">
+                <h2>Sign in</h2>
+                <div class="subtitle">Access your Planity account</div>
+            </div>
+        </div>
+
         <label>Email address</label>
         <input formControlName="email" type="email" placeholder="task@test.com" />
         <div class="validation"
             *ngIf="loginForm.controls.email.invalid && (loginForm.controls.email.dirty || loginForm.controls.email.touched)">
             Please enter a valid email address
         </div>
+
         <label>Password</label>
         <input formControlName="password" type="password" placeholder="Pa$$w0rd" />
         <div class="validation"
             *ngIf="loginForm.controls.password.invalid && (loginForm.controls.password.dirty || loginForm.controls.password.touched)">
             Password is required
         </div>
+
         <div class="actions">
             <button type="submit" class="btn primary">Sign in</button>
         </div>

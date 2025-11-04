@@ -7,6 +7,6 @@
         public DateTime Date { get; set; }
         public bool IsCompleted { get; set; }
 
-        public RoutineEntity RoutineEntity { get; set; }
+        public RoutineEntity? RoutineEntity { get; set; }
     }
 }

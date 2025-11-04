@@ -37,12 +37,8 @@ namespace Infrastructure.Services
             };
         }
 
-        public async Task<UserDto?> Register(RegisterDto user)
+        public async Task<IdentityResult?> Register(RegisterDto user)
         {
-            var mail = await _userManager.FindByEmailAsync(user.Email);
-            if (mail != null)
-                return null;
-
             var userEntity = new UserEntity
             {
                 FirstName = user.FirstName,
@@ -51,13 +47,7 @@ namespace Infrastructure.Services
                 UserName = user.Email,
                 CreatedAt = DateTime.Now
             };
-            await _signInManager.UserManager.CreateAsync(userEntity, user.Password);
-
-            return new UserDto
-            {
-                Email = user.Email,
-                FirstName = user.FirstName,
-            };
+            return await _signInManager.UserManager.CreateAsync(userEntity, user.Password);
         }
 
         public async Task<bool> Logout()

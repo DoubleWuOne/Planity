@@ -19,6 +19,8 @@ namespace API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterDto user)
         {
             var status = await _accountService.Register(user);
+            if (status == null)
+                return BadRequest("User with this email already exists.");
             return Ok(status);
         }
 
@@ -35,7 +37,12 @@ namespace API.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            if (userId == null)
+                return NotFound();
+
             var userDto = await _accountService.GetUserInfo(userId);
+            if (userDto == null)
+                return NotFound();
             return Ok(userDto);
         }
 

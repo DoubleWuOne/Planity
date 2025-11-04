@@ -11,7 +11,7 @@ namespace Infrastructure.Services
     {
         private readonly PlanityDbContext _context;
         private readonly SignInManager<UserEntity> _signInManager;
-        private UserManager<UserEntity> _userManager;
+        private readonly UserManager<UserEntity> _userManager;
 
         public AccountService(PlanityDbContext context, SignInManager<UserEntity> signInManager, UserManager<UserEntity> userManager)
         {
@@ -20,28 +20,24 @@ namespace Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<UserDto> Login(LoginDto loginDto, bool cookies)
+        public async Task<UserDto?> Login(LoginDto loginDto, bool cookies)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null)
                 return null;
 
-            var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, cookies, lockoutOnFailure: false);
             if (!result.Succeeded)
                 return null;
 
-            if (cookies)
-            {
-                await _signInManager.SignInAsync(user, isPersistent: true);
-            }
             return new UserDto
             {
-                Email = user.Email,
-                FirstName = user.FirstName
+                Email = user.Email!,
+                FirstName = user.FirstName!
             };
         }
 
-        public async Task<UserDto> Register(RegisterDto user)
+        public async Task<UserDto?> Register(RegisterDto user)
         {
             var mail = await _userManager.FindByEmailAsync(user.Email);
             if (mail != null)
@@ -52,9 +48,9 @@ namespace Infrastructure.Services
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
-                UserName = user.Email
+                UserName = user.Email,
+                CreatedAt = DateTime.Now
             };
-            userEntity.CreatedAt = DateTime.Now;
             await _signInManager.UserManager.CreateAsync(userEntity, user.Password);
 
             return new UserDto
@@ -71,7 +67,7 @@ namespace Infrastructure.Services
             return true;
         }
 
-        public async Task<UserDto> GetUserInfo(string userEmail)
+        public async Task<UserDto?> GetUserInfo(string userEmail)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userEmail);
             if (user == null)
@@ -79,14 +75,9 @@ namespace Infrastructure.Services
 
             return new UserDto
             {
-                Email = user.Email,
-                FirstName = user.FirstName,
+                Email = user.Email!,
+                FirstName = user.FirstName!,
             };
-        }
-
-        private async Task<bool> CheckIfUserWithMailExist(string userEmail)
-        {
-            return await _context.Users.AnyAsync(x => x.Email == userEmail);
         }
     }
 }

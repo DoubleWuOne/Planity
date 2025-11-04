@@ -4,9 +4,9 @@ namespace Core.Interfaces
 {
     public interface IAccountService
     {
-        Task<UserDto> Login(LoginDto loginDto, bool cookies);
-        Task<UserDto> Register(RegisterDto user);
+        Task<UserDto?> Login(LoginDto loginDto, bool cookies);
+        Task<UserDto?> Register(RegisterDto user);
         Task<bool> Logout();
-        Task<UserDto> GetUserInfo(string userEmail);
+        Task<UserDto?> GetUserInfo(string userEmail);
     }
 }

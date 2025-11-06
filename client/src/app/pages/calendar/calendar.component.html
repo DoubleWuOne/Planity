@@ -57,7 +57,8 @@
         [events]="events"
         [refresh]="refresh"
         (eventClicked)="handleEvent('Clicked', $event.event)"
-        (eventTimesChanged)="eventTimesChanged($event)">
+        (eventTimesChanged)="eventTimesChanged($event)"
+        (hourSegmentClicked)="hourSegmentClicked($event)">
       </mwl-calendar-week-view>
       
       <mwl-calendar-day-view
@@ -66,7 +67,8 @@
         [events]="events"
         [refresh]="refresh"
         (eventClicked)="handleEvent('Clicked', $event.event)"
-        (eventTimesChanged)="eventTimesChanged($event)">
+        (eventTimesChanged)="eventTimesChanged($event)"
+        (hourSegmentClicked)="hourSegmentClicked($event)">
       </mwl-calendar-day-view>
     </div>
   </div>

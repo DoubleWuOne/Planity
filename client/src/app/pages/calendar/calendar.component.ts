@@ -122,6 +122,8 @@ export class CalendarComponent {
   ];
 
   activeDayIsOpen: boolean = true;
+  dragToCreateActive = false;
+  tempEventStart: Date | null = null;
 
   ngOnInit() {
     this.loadEvents();
@@ -375,6 +377,38 @@ export class CalendarComponent {
 
   handleEvent(action: string, event: CalendarEvent): void {
     this.openEditEventModal(event);
+  }
+
+  hourSegmentClicked(event: { date: Date; sourceEvent: MouseEvent }): void {
+    // Open modal with the clicked time
+    const clickedDate = event.date;
+    
+    // Format date as YYYY-MM-DD
+    const year = clickedDate.getFullYear();
+    const month = String(clickedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(clickedDate.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
+    // Get the hour and minute
+    const startHour = String(clickedDate.getHours()).padStart(2, '0');
+    const startMin = String(clickedDate.getMinutes()).padStart(2, '0');
+    
+    // Default to 1 hour duration
+    const endDate = addHours(clickedDate, 1);
+    const endHour = String(endDate.getHours()).padStart(2, '0');
+    const endMin = String(endDate.getMinutes()).padStart(2, '0');
+    
+    this.isEditMode = false;
+    this.editingEvent = null;
+    this.eventForm = {
+      title: '',
+      description: '',
+      date: dateStr,
+      startTime: `${startHour}:${startMin}`,
+      endTime: `${endHour}:${endMin}`,
+      allDay: false
+    };
+    this.showEventModal = true;
   }
 
   addEvent(): void {

@@ -1,3 +1,178 @@
-<div class="page">
-  <h2>Calendar (placeholder)</h2>
+<div class="calendar-page">
+  <div class="calendar-header">
+    <div class="header-left">
+      <h2>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h2>
+      <div class="nav-controls">
+        <button class="btn-nav" (click)="previousPeriod()">
+          ←
+        </button>
+        <button class="btn-nav" (click)="today()">
+          Today
+        </button>
+        <button class="btn-nav" (click)="nextPeriod()">
+          →
+        </button>
+      </div>
+    </div>
+    
+    <div class="view-controls">
+      <button
+        class="btn"
+        [class.active]="view === CalendarView.Month"
+        (click)="setView(CalendarView.Month)">
+        Month
+      </button>
+      <button
+        class="btn"
+        [class.active]="view === CalendarView.Week"
+        (click)="setView(CalendarView.Week)">
+        Week
+      </button>
+      <button
+        class="btn"
+        [class.active]="view === CalendarView.Day"
+        (click)="setView(CalendarView.Day)">
+        Day
+      </button>
+    </div>
+  </div>
+
+  <div class="calendar-container">
+    <div [ngSwitch]="view">
+      <mwl-calendar-month-view
+        *ngSwitchCase="CalendarView.Month"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refresh"
+        [activeDayIsOpen]="activeDayIsOpen"
+        [openDayEventsTemplate]="customOpenDayEventsTemplate"
+        (dayClicked)="dayClicked($event.day)"
+        (eventClicked)="handleEvent('Clicked', $event.event)"
+        (eventTimesChanged)="eventTimesChanged($event)">
+      </mwl-calendar-month-view>
+      
+      <mwl-calendar-week-view
+        *ngSwitchCase="CalendarView.Week"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refresh"
+        (eventClicked)="handleEvent('Clicked', $event.event)"
+        (eventTimesChanged)="eventTimesChanged($event)">
+      </mwl-calendar-week-view>
+      
+      <mwl-calendar-day-view
+        *ngSwitchCase="CalendarView.Day"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refresh"
+        (eventClicked)="handleEvent('Clicked', $event.event)"
+        (eventTimesChanged)="eventTimesChanged($event)">
+      </mwl-calendar-day-view>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" (click)="addEvent()">Add New Event</button>
+  </div>
+
+  <!-- Custom template for open day events with Add Event button -->
+  <ng-template
+    #customOpenDayEventsTemplate
+    let-events="events"
+    let-eventClicked="eventClicked"
+    let-isOpen="isOpen"
+    let-trackByEventId="trackByEventId">
+    <div class="cal-open-day-events" *ngIf="isOpen">
+      <div
+        *ngFor="let event of events; trackBy: trackByEventId"
+        [style.backgroundColor]="event.color?.primary"
+        class="cal-event"
+        (click)="$event.stopPropagation(); eventClicked.emit({ event: event })">
+        {{ event.title }}
+      </div>
+      <button class="btn-add-event-inline" (click)="openEventModal(selectedDate!); $event.stopPropagation()">
+        + Add Event
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Event Modal -->
+  <div class="modal-overlay" *ngIf="showEventModal" (click)="closeEventModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ isEditMode ? 'Edit Event' : 'Add Event' }}</h3>
+        <button class="close-btn" (click)="closeEventModal()">×</button>
+      </div>
+      
+      <form (ngSubmit)="saveEvent()" class="event-form">
+        <div class="form-group">
+          <label for="title">Title <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="title" 
+            [(ngModel)]="eventForm.title" 
+            name="title"
+            placeholder="Event title"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description" 
+            [(ngModel)]="eventForm.description" 
+            name="description"
+            rows="3"
+            placeholder="Event description (optional)"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input 
+            type="date" 
+            id="date" 
+            [(ngModel)]="eventForm.date" 
+            name="date"
+            required>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="eventForm.allDay" 
+              name="allDay">
+            All Day Event
+          </label>
+        </div>
+
+        <div class="time-group" *ngIf="!eventForm.allDay">
+          <div class="form-group">
+            <label for="startTime">Start Time</label>
+            <input 
+              type="time" 
+              id="startTime" 
+              [(ngModel)]="eventForm.startTime" 
+              name="startTime">
+          </div>
+
+          <div class="form-group">
+            <label for="endTime">End Time</label>
+            <input 
+              type="time" 
+              id="endTime" 
+              [(ngModel)]="eventForm.endTime" 
+              name="endTime">
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn delete" *ngIf="isEditMode" (click)="deleteEvent()">Delete</button>
+          <div class="spacer"></div>
+          <button type="button" class="btn cancel" (click)="closeEventModal()">Cancel</button>
+          <button type="submit" class="btn primary">{{ isEditMode ? 'Update' : 'Save Event' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

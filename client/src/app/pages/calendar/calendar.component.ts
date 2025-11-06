@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule, NgSwitch, NgSwitchCase } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { startOfDay, endOfDay, subDays, addDays, endOfMonth, isSameDay, isSameMonth, addHours, addWeeks, addMonths, subWeeks, subMonths, setHours, setMinutes } from 'date-fns';
+import { startOfDay, endOfDay, subDays, addDays, endOfMonth, isSameDay, isSameMonth, addHours, addWeeks, addMonths, subWeeks, subMonths, setHours, setMinutes, addMinutes } from 'date-fns';
 import { Subject } from 'rxjs';
 import {
   CalendarEvent,
@@ -124,6 +124,9 @@ export class CalendarComponent {
   activeDayIsOpen: boolean = true;
   dragToCreateActive = false;
   tempEventStart: Date | null = null;
+  tempEventEnd: Date | null = null;
+  tempEvent: CalendarEvent | null = null;
+  currentViewSegments: any = null;
 
   ngOnInit() {
     this.loadEvents();
@@ -379,24 +382,110 @@ export class CalendarComponent {
     this.openEditEventModal(event);
   }
 
-  hourSegmentClicked(event: { date: Date; sourceEvent: MouseEvent }): void {
-    // Open modal with the clicked time
-    const clickedDate = event.date;
+  beforeWeekOrDayViewRender(renderEvent: any): void {
+    // Store segment data from the render event for drag-to-create
+    if (renderEvent.period) {
+      this.currentViewSegments = renderEvent.period;
+    }
+  }
+
+  startDragToCreate(startDate: Date): void {
+    this.dragToCreateActive = true;
+    this.tempEventStart = startDate;
+    this.tempEventEnd = addMinutes(startDate, 30);
     
+    // Create temporary visual event
+    this.tempEvent = {
+      start: this.tempEventStart,
+      end: this.tempEventEnd!,
+      title: 'New Event',
+      color: { primary: '#6366f1', secondary: '#c7d2fe' },
+      draggable: false,
+      resizable: { beforeStart: false, afterEnd: false }
+    };
+    this.events = [...this.events, this.tempEvent!];
+    this.refresh.next();
+    
+    // Add global mouseup listener
+    const mouseUpHandler = () => {
+      if (this.dragToCreateActive) {
+        this.endDragToCreate();
+      }
+      document.removeEventListener('mouseup', mouseUpHandler);
+    };
+    document.addEventListener('mouseup', mouseUpHandler);
+  }
+
+  updateDragToCreate(currentDate: Date): void {
+    if (!this.tempEventStart) return;
+    
+    // Update end time if dragging forward
+    if (currentDate >= this.tempEventStart) {
+      this.tempEventEnd = addMinutes(currentDate, 30);
+      if (this.tempEvent) {
+        this.tempEvent.end = this.tempEventEnd!;
+        this.refresh.next();
+      }
+    }
+  }
+
+  hourSegmentClicked(event: { date: Date; sourceEvent: MouseEvent }): void {
+    // Simple click handler - only fires if not dragging
+    if (!this.dragToCreateActive) {
+      this.openModalForTimeSlot(event.date);
+    }
+  }
+
+  onHourSegmentMouseDown(date: Date, event: MouseEvent): void {
+    event.preventDefault();
+    this.startDragToCreate(date);
+  }
+
+  onHourSegmentMouseMove(date: Date, event: MouseEvent): void {
+    if (this.dragToCreateActive) {
+      this.updateDragToCreate(date);
+    }
+  }
+
+  onHourSegmentMouseUp(date: Date, event: MouseEvent): void {
+    if (this.dragToCreateActive) {
+      this.endDragToCreate();
+    }
+  }
+
+  endDragToCreate(): void {
+    if (!this.tempEventStart || !this.tempEventEnd) return;
+    
+    // Remove temporary event
+    if (this.tempEvent) {
+      this.events = this.events.filter(e => e !== this.tempEvent);
+      this.tempEvent = null;
+    }
+    
+    // Open modal with selected time range
+    this.openModalForTimeSlot(this.tempEventStart, this.tempEventEnd);
+    
+    // Reset drag state
+    this.dragToCreateActive = false;
+    this.tempEventStart = null;
+    this.tempEventEnd = null;
+  }
+
+  openModalForTimeSlot(startDate: Date, endDate?: Date): void {
     // Format date as YYYY-MM-DD
-    const year = clickedDate.getFullYear();
-    const month = String(clickedDate.getMonth() + 1).padStart(2, '0');
-    const day = String(clickedDate.getDate()).padStart(2, '0');
+    const year = startDate.getFullYear();
+    const month = String(startDate.getMonth() + 1).padStart(2, '0');
+    const day = String(startDate.getDate()).padStart(2, '0');
     const dateStr = `${year}-${month}-${day}`;
     
-    // Get the hour and minute
-    const startHour = String(clickedDate.getHours()).padStart(2, '0');
-    const startMin = String(clickedDate.getMinutes()).padStart(2, '0');
+    // Get the start hour and minute
+    const startHour = String(startDate.getHours()).padStart(2, '0');
+    const startMin = String(startDate.getMinutes()).padStart(2, '0');
     
-    // Default to 1 hour duration
-    const endDate = addHours(clickedDate, 1);
-    const endHour = String(endDate.getHours()).padStart(2, '0');
-    const endMin = String(endDate.getMinutes()).padStart(2, '0');
+    // Calculate end time
+    const finalEndDate = endDate || addHours(startDate, 1);
+    const endHour = String(finalEndDate.getHours()).padStart(2, '0');
+    const endMin = String(finalEndDate.getMinutes()).padStart(2, '0');
     
     this.isEditMode = false;
     this.editingEvent = null;

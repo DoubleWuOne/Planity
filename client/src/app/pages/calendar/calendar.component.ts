@@ -67,6 +67,8 @@ export class CalendarComponent {
   CalendarView = CalendarView;
   viewDate: Date = new Date();
   selectedDate: Date | null = null;
+  // default view key stored in localStorage (one of CalendarView values)
+  defaultViewKey: string = '';
 
   refresh = new Subject<void>();
 
@@ -83,43 +85,8 @@ export class CalendarComponent {
     allDay: true
   };
 
-  events: CalendarEvent[] = [
-    {
-      start: subDays(startOfDay(new Date()), 1),
-      end: addDays(new Date(), 1),
-      title: 'A 3 day event',
-      color: colors.red,
-      allDay: true,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-    {
-      start: startOfDay(new Date()),
-      title: 'An event with no end date',
-      color: colors.yellow,
-    },
-    {
-      start: subDays(endOfMonth(new Date()), 3),
-      end: addDays(endOfMonth(new Date()), 3),
-      title: 'A long event that spans 2 months',
-      color: colors.blue,
-      allDay: true,
-    },
-    {
-      start: addHours(startOfDay(new Date()), 2),
-      end: addHours(new Date(), 2),
-      title: 'A draggable and resizable event',
-      color: colors.yellow,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-  ];
+  // Events will be loaded from backend; start with empty array
+  events: CalendarEvent[] = [];
 
   activeDayIsOpen: boolean = true;
   dragToCreateActive = false;
@@ -129,14 +96,68 @@ export class CalendarComponent {
   currentViewSegments: any = null;
 
   ngOnInit() {
+    // load user's preferred default view (if set)
+    const saved = localStorage.getItem('calendarDefaultView');
+    if (saved) {
+      try {
+        this.view = saved as CalendarView;
+      } catch {
+        this.view = CalendarView.Month;
+      }
+    }
+
+    this.defaultViewKey = this.view;
+
     this.loadEvents();
+  }
+
+  setDefaultViewFromSelect(): void {
+    // save selected default view to localStorage and apply it immediately
+    if (this.defaultViewKey) {
+      localStorage.setItem('calendarDefaultView', this.defaultViewKey);
+      this.view = this.defaultViewKey as CalendarView;
+    }
   }
 
   loadEvents() {
     this.calendarService.getCalendarEvents().subscribe({
       next: (events) => {
-        // Transform backend events to CalendarEvent format if needed
-        this.events = events;
+        // Transform backend events to CalendarEvent[] expected by angular-calendar
+        // Backend event shape is expected to contain at least: id, title, start, end, description, allDay
+        try {
+          this.events = (events || []).map((ev: any) => {
+            // Accept multiple possible backend field names for start/end
+            const rawStart = ev.start ?? ev.startDate ?? ev.startTime ?? ev.date ?? ev.from ?? ev.begin;
+            const rawEnd = ev.end ?? ev.endDate ?? ev.endTime ?? ev.to ?? ev.finish ?? ev.until;
+
+            const start = rawStart ? new Date(rawStart) : new Date();
+            const end = rawEnd ? new Date(rawEnd) : undefined;
+
+            // If backend uses flags for all-day or stores end as end-of-day marker, keep it
+            const allDay = ev.allDay === true || ev.allDay === 'true' || ev.isAllDay === true || ev.allDayEvent === true || ev.allDayEvent === 'true';
+
+            const calendarEvent: CalendarEvent = {
+              title: ev.title || ev.name || 'Untitled',
+              start: start,
+              end: end,
+              color: (ev.color && typeof ev.color === 'object') ? ev.color : (ev.color ? { primary: ev.color, secondary: ev.color } : colors.blue),
+              draggable: ev.draggable !== false,
+              resizable: ev.resizable || { beforeStart: true, afterEnd: true },
+              meta: {
+                id: ev.id ?? ev.eventId ?? ev._id,
+                description: ev.description || ev.meta?.description || ev.desc || ev.description || '',
+                raw: ev,
+              },
+              allDay: allDay,
+            };
+
+            return calendarEvent;
+          });
+        } catch (err) {
+          console.error('Failed to map calendar events from backend', err);
+          this.events = events || [];
+        }
+
         this.refresh.next();
       },
       error: (error) => {
@@ -262,8 +283,9 @@ export class CalendarComponent {
     let endDate: Date;
 
     if (this.eventForm.allDay) {
-      startDate = startOfDay(eventDate);
-      endDate = endOfDay(eventDate);
+      // create exact local midnight -> 23:59 for all-day events to avoid timezone shifts
+      startDate = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate(), 0, 0, 0, 0);
+      endDate = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate(), 23, 59, 0, 0);
     } else {
       const [startHour, startMin] = this.eventForm.startTime.split(':').map(Number);
       const [endHour, endMin] = this.eventForm.endTime.split(':').map(Number);
@@ -272,34 +294,41 @@ export class CalendarComponent {
       endDate = setMinutes(setHours(eventDate, endHour), endMin);
     }
 
+    // Helper: format local datetime without timezone designator so backend receives local time
+    const formatLocal = (d: Date) => {
+      if (!d) return null;
+      const y = d.getFullYear();
+      const mo = String(d.getMonth() + 1).padStart(2, '0');
+      const da = String(d.getDate()).padStart(2, '0');
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      const ss = String(d.getSeconds()).padStart(2, '0');
+      return `${y}-${mo}-${da}T${hh}:${mm}:${ss}`; // no trailing Z
+    };
+
+    // Send local datetime strings using backend field names (startTime/endTime/allDayEvent)
     const eventData = {
       title: this.eventForm.title.trim(),
       description: this.eventForm.description,
-      start: startDate,
-      end: endDate,
-      allDay: this.eventForm.allDay
+      startTime: startDate ? formatLocal(startDate) : null,
+      endTime: endDate ? formatLocal(endDate) : null,
+      allDayEvent: this.eventForm.allDay
     };
 
     if (this.isEditMode && this.editingEvent) {
       // Update existing event
-      const eventId = (this.editingEvent as any).id; // Assuming backend event has id
+      // Determine backend id (stored in meta.id when mapping)
+      const eventId = (this.editingEvent as any)?.meta?.id ?? (this.editingEvent as any)?.id;
+      if (!eventId) {
+        console.error('No event id found for editing');
+        alert('Cannot update event: missing id');
+        return;
+      }
+
       this.calendarService.editCalendarEvent(eventId, eventData).subscribe({
         next: (updatedEvent) => {
-          this.events = this.events.map(e => {
-            if (e === this.editingEvent) {
-              return {
-                ...e,
-                title: eventData.title,
-                start: startDate,
-                end: endDate,
-                meta: {
-                  description: eventData.description
-                }
-              };
-            }
-            return e;
-          });
-          this.refresh.next();
+          // reload events from backend to keep frontend in sync
+          this.loadEvents();
           this.closeEventModal();
         },
         error: (error) => {
@@ -311,24 +340,8 @@ export class CalendarComponent {
       // Add new event
       this.calendarService.addCalendarEvent(eventData).subscribe({
         next: (newEvent) => {
-          this.events = [
-            ...this.events,
-            {
-              ...newEvent,
-              start: startDate,
-              end: endDate,
-              color: colors.blue,
-              draggable: true,
-              resizable: {
-                beforeStart: true,
-                afterEnd: true,
-              },
-              meta: {
-                description: eventData.description
-              }
-            },
-          ];
-          this.refresh.next();
+          // refresh events from backend so mapping/ids are consistent
+          this.loadEvents();
           this.closeEventModal();
         },
         error: (error) => {
@@ -341,11 +354,17 @@ export class CalendarComponent {
 
   deleteEvent(): void {
     if (this.editingEvent && confirm('Are you sure you want to delete this event?')) {
-      const eventId = (this.editingEvent as any).id; // Assuming backend event has id
+      const eventId = (this.editingEvent as any)?.meta?.id ?? (this.editingEvent as any)?.id;
+      if (!eventId) {
+        console.error('No event id found for delete');
+        alert('Cannot delete event: missing id');
+        return;
+      }
+
       this.calendarService.deleteCalendarEvent(eventId).subscribe({
         next: () => {
-          this.events = this.events.filter(e => e !== this.editingEvent);
-          this.refresh.next();
+          // reload events from backend
+          this.loadEvents();
           this.closeEventModal();
         },
         error: (error) => {
@@ -365,15 +384,48 @@ export class CalendarComponent {
     newStart,
     newEnd,
   }: CalendarEventTimesChangedEvent): void {
-    this.events = this.events.map((iEvent) => {
-      if (iEvent === event) {
-        return {
-          ...event,
-          start: newStart,
-          end: newEnd,
-        };
+    // Persist the new times to backend (if possible) then refresh
+    const eventId = (event as any)?.meta?.id ?? (event as any)?.id;
+    if (!eventId) {
+      // Fallback to local update if no id
+      this.events = this.events.map((iEvent) => {
+        if (iEvent === event) {
+          return {
+            ...event,
+            start: newStart,
+            end: newEnd,
+          };
+        }
+        return iEvent;
+      });
+      this.refresh.next();
+      return;
+    }
+
+    const updatePayload = {
+      startTime: newStart ? newStart.toISOString() : null,
+      endTime: newEnd ? newEnd.toISOString() : null,
+    };
+
+    this.calendarService.editCalendarEvent(eventId, updatePayload).subscribe({
+      next: () => {
+        this.loadEvents();
+      },
+      error: (err) => {
+        console.error('Failed to persist moved/resized event', err);
+        // still update locally so UI remains responsive
+        this.events = this.events.map((iEvent) => {
+          if (iEvent === event) {
+            return {
+              ...event,
+              start: newStart,
+              end: newEnd,
+            };
+          }
+          return iEvent;
+        });
+        this.refresh.next();
       }
-      return iEvent;
     });
     this.handleEvent('Dropped or resized', event);
   }

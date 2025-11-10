@@ -35,6 +35,16 @@
         Day
       </button>
     </div>
+    
+    <div class="default-view-control">
+      <label for="defaultView">Default view</label>
+      <select id="defaultView" [(ngModel)]="defaultViewKey" (change)="setDefaultViewFromSelect()">
+        <option [value]="CalendarView.Month">Month</option>
+        <option [value]="CalendarView.Week">Week</option>
+        <option [value]="CalendarView.Day">Day</option>
+      </select>
+      <button class="btn small" (click)="setDefaultViewFromSelect()">Save default</button>
+    </div>
   </div>
 
   <div class="calendar-container">

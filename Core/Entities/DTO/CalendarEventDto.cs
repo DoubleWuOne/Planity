@@ -1,6 +1,6 @@
-﻿namespace Core.Entities
+﻿namespace Core.Entities.DTO
 {
-    public class CalendarEventEntity
+    public class CalendarEventDto
     {
         public int Id { get; set; }
         public required string Title { get; set; }
@@ -8,8 +8,5 @@
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public bool? AllDayEvent { get; set; }
-        public required string UserId { get; set; }
-        public required UserEntity User { get; set; }
-
     }
 }

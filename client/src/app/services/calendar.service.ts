@@ -12,6 +12,10 @@ export class CalendarService {
     getCalendarEvents(): Observable<any> {
       return this.http.get(this.baseUrl + 'calendar');
     }
+
+    getCalendarEvent(id:number): Observable<any> {
+      return this.http.get(this.baseUrl + 'calendar/' + id);
+    }
     
     addCalendarEvent(values: any): Observable<any> {
       return this.http.post(this.baseUrl + 'calendar', values);

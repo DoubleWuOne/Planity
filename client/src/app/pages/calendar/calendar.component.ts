@@ -384,21 +384,19 @@ export class CalendarComponent {
     newStart,
     newEnd,
   }: CalendarEventTimesChangedEvent): void {
+    // Immediately update the event object so UI and the edit modal show new times
+    try {
+      (event as any).start = newStart;
+      (event as any).end = newEnd;
+    } catch (err) {
+      // ignore
+    }
+    this.refresh.next();
+
     // Persist the new times to backend (if possible) then refresh
     const eventId = (event as any)?.meta?.id ?? (event as any)?.id;
     if (!eventId) {
-      // Fallback to local update if no id
-      this.events = this.events.map((iEvent) => {
-        if (iEvent === event) {
-          return {
-            ...event,
-            start: newStart,
-            end: newEnd,
-          };
-        }
-        return iEvent;
-      });
-      this.refresh.next();
+      // No backend id: nothing more to do
       return;
     }
 
@@ -413,20 +411,12 @@ export class CalendarComponent {
       },
       error: (err) => {
         console.error('Failed to persist moved/resized event', err);
-        // still update locally so UI remains responsive
-        this.events = this.events.map((iEvent) => {
-          if (iEvent === event) {
-            return {
-              ...event,
-              start: newStart,
-              end: newEnd,
-            };
-          }
-          return iEvent;
-        });
+        // still update locally so UI remains responsive (already applied above)
         this.refresh.next();
       }
     });
+
+    // Open edit modal for the moved/resized event (will show updated times)
     this.handleEvent('Dropped or resized', event);
   }
 

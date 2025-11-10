@@ -20,7 +20,8 @@ export class TasksComponent implements OnInit {
   ngOnInit(): void {
     this.taskService.getTasks().subscribe({
     next: response => {
-      this.tasks = response;
+      // ensure tasks is always an array (some APIs may return null)
+      this.tasks = Array.isArray(response) ? response : (response ? [response] : []);
     }
     })
   }
@@ -76,6 +77,7 @@ export class TasksComponent implements OnInit {
   }
   /** Tasks that are not completed */
   get openTasks() {
+    if (!Array.isArray(this.tasks)) return [];
     return this.tasks.filter(t => !t.isCompleted && !this.isToday(t.dueDate || ''));
   }
 

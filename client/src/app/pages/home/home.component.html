@@ -124,7 +124,7 @@
         <ul *ngIf="!loadingTasks && todaysTasks.length > 0" class="task-preview">
           <li *ngFor="let t of todaysTasks" class="task-item">
             <div class="left">
-              <div class="dot" [style.background]="t.color || '#eef2ff'">✓</div>
+              <div class="dot" [style.background]="t.color || '#eef2ff'"></div>
             </div>
             <div class="content">
               <div class="title">{{ t.title }}</div>
@@ -135,6 +135,31 @@
       </div>
 
       <div style="margin-top:1rem; text-align:right;"><a class="btn primary" routerLink="/tasks">Open Tasks</a></div>
+    </div>
+    
+    <div class="coming-card calendar">
+      <h2>Today's events</h2>
+      <p class="muted">A simplified list of today's calendar events.</p>
+
+      <div class="calendar-preview">
+        <div *ngIf="loadingCalendarEvents" class="loading">Loading events…</div>
+        <div *ngIf="!loadingCalendarEvents && todaysCalendarEvents.length === 0" class="empty">No events for today.</div>
+        <ul *ngIf="!loadingCalendarEvents && todaysCalendarEvents.length > 0" class="task-preview">
+          <li *ngFor="let e of todaysCalendarEvents" class="task-item">
+            <div class="left">
+              <div class="dot" [style.background]="e.raw?.color?.primary || '#c7d2fe'"></div>
+            </div>
+            <div class="content">
+              <div class="title">{{ e.title }}</div>
+              <div class="desc">
+                {{ e.allDay ? 'All day' : (e.start ? (e.end ? ((e.start | date:'HH:mm') + ' - ' + (e.end | date:'HH:mm')) : (e.start | date:'HH:mm')) : 'No time') }}
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div style="margin-top:1rem; text-align:right;"><a class="btn primary" routerLink="/calendar">Open Calendar</a></div>
     </div>
   </div>
 </div>

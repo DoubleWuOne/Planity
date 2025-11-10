@@ -18,7 +18,7 @@ export class LoginComponent {
   private route = inject(ActivatedRoute);
 
   loginForm = this.fb.group({
-    email: ['task@test.com'],
+    email: ['kubaduba@mail.com'],
     password: ['Pa$$w0rd']
   });
 

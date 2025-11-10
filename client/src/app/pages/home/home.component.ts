@@ -6,6 +6,7 @@ import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
 import { RoutineService } from '../../services/routine.service';
 import { Routine } from '../../models/routine.model';
+import { CalendarService } from '../../services/calendar.service';
 
 @Component({
   selector: 'app-home',
@@ -19,12 +20,16 @@ export class HomeComponent implements AfterViewInit {
   accountService = inject(AccountService);
   private taskService = inject(TaskService);
   routineService = inject(RoutineService);
+  private calendarService = inject(CalendarService);
 
   todaysTasks: Task[] = [];
   loadingTasks = false;
   // routines preview
   todaysRoutines: Routine[] = [];
   loadingRoutines = false;
+  // calendar events preview
+  todaysCalendarEvents: any[] = [];
+  loadingCalendarEvents = false;
 
   // react to changes in currentUser signal and load today's tasks when user is present
   private _watch = effect(() => {
@@ -32,6 +37,7 @@ export class HomeComponent implements AfterViewInit {
     if (user) {
       this.loadTodayTasks();
       this.loadTodayRoutines();
+      this.loadTodayCalendarEvents();
     } else {
       this.todaysTasks = [];
       this.todaysRoutines = [];
@@ -72,6 +78,49 @@ export class HomeComponent implements AfterViewInit {
         });
   this.todaysRoutines = visible;
         this.loadingRoutines = false;
+      }
+    });
+  }
+
+  private loadTodayCalendarEvents() {
+    this.loadingCalendarEvents = true;
+    this.calendarService.getCalendarEvents().subscribe({
+      next: (list) => {
+        try {
+          const today = new Date();
+          const isSameDay = (d: Date) => d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
+
+          const mapped = (list || []).map((ev: any) => {
+            const rawStart = ev.startTime ?? ev.start ?? ev.startDate ?? ev.date ?? ev.from ?? ev.begin;
+            const rawEnd = ev.endTime ?? ev.end ?? ev.endDate ?? ev.to ?? ev.finish ?? ev.until;
+            const start = rawStart ? new Date(rawStart) : null;
+            const end = rawEnd ? new Date(rawEnd) : null;
+            const allDay = ev.allDayEvent === true || ev.allDay === true || ev.isAllDay === true;
+            return { id: ev.id ?? ev.eventId ?? ev._id, title: ev.title || ev.name || 'Untitled', start, end, allDay, raw: ev };
+          });
+
+          const todayEvents = mapped.filter((e: any) => {
+            if (e.start) return isSameDay(e.start);
+            // if no start but allDay and maybe raw contains date-only field
+            const fallbackDate = e.raw?.date ?? e.raw?.day ?? e.raw?.startDate;
+            if (fallbackDate) {
+              const d = new Date(fallbackDate);
+              return isSameDay(d);
+            }
+            return false;
+          }).slice(0, 15);
+
+          this.todaysCalendarEvents = todayEvents;
+        } catch (err) {
+          console.error('Failed to load calendar preview', err);
+          this.todaysCalendarEvents = [];
+        }
+
+        this.loadingCalendarEvents = false;
+      },
+      error: (err) => {
+        console.error('Failed to load calendar events for home preview', err);
+        this.loadingCalendarEvents = false;
       }
     });
   }
